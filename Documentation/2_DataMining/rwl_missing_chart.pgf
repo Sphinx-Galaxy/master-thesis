@@ -1,0 +1,56 @@
+﻿\begin{tikzpicture}
+ 
+\begin{axis} [
+	ybar,
+	height=6cm,
+	width=12cm,
+	title={RWL Parameter Entries},
+	ymin=0,
+	xscale=1.1,
+	ymax=4e7,
+	xlabel={[year]},
+	ylabel={[sample]},
+symbolic x coords={$2004$, $2005$, $2006$, $2007$, $2008$, $2009$, $2010$}]
+
+\addplot[
+	top color=blue,
+	bottom color=blue!50] coordinates {
+($2004$, 27316136)
+($2005$, 15313272)
+($2006$, 13086456)
+($2007$, 14410202)
+($2008$, 14025183)
+($2009$, 19913064)
+($2010$, 22930278)
+};
+\addlegendentry{Total}
+
+ \addplot[
+ 	top color=red,
+ 	bottom color=red!50] coordinates {
+($2004$, 3020072)
+($2005$, 1894684)
+($2006$, 1483212)
+($2007$, 1412812)
+($2008$, 1365232)
+($2009$, 1037740)
+($2010$, 1747924)
+};
+\addlegendentry{Speed}
+
+ \addplot[
+ 	top color=green,
+ 	bottom color=green!50] coordinates {
+($2004$, 3256812)
+($2005$, 1830160)
+($2006$, 1540224)
+($2007$, 1435680)
+($2008$, 1402076)
+($2009$, 10258132)
+($2010$, 7622804)
+};
+\addlegendentry{Friction}
+
+\end{axis}
+ 
+\end{tikzpicture}

@@ -1,0 +1,30 @@
+﻿\begin{tikzpicture}[
+	block/.style={
+		rectangle,
+		thick,
+		draw=black,
+		align=center,
+		rounded corners,
+		minimum height=4em,
+		minimum width=8em
+	},
+]
+
+\node[block, top color=green!20,	bottom color=green!40] (dfl) at (-5, 3) {Deterministic \\ Feature};
+\node[block, top color=green!20,	bottom color=green!40] (dfr) at (5, 3) {Known at all \\ Times};
+\draw[ultra thick, -] (dfl) -- (dfr);
+
+\node[block, top color=blue!20,	bottom color=blue!40] (afl) at (-5, 1) {Aleatoric \\ Feature};
+\node[block, top color=blue!20,	bottom color=blue!40] (afr) at (3, 1) {(Unknown) \\ Measurements};
+\draw[ultra thick, -] (afl) -- (afr);
+
+\node[block, top color=red!20,	bottom color=red!40] (ohel) at (-5, -1) {One-Hot \\ Enconding};
+\node[block, top color=red!20,	bottom color=red!40] (oher) at (3, -1) {Descrete \\ States};
+\draw[ultra thick, -] (ohel) -- (oher);
+
+\node[block, top color=gray!20,	bottom color=gray!40] (al) at (-5, -3) {Artificial \\ Feature};
+\node[block, top color=gray!20,	bottom color=gray!40] (ar) at (5, -3) {Expert \\ Design};
+\draw[ultra thick, -] (al) -- (ar);
+
+
+\end{tikzpicture}

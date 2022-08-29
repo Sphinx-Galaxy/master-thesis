@@ -1,0 +1,59 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=4em,
+		minimum width=6em
+	},
+	trafo/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=4em,
+		minimum width=6em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=4em,
+		minimum width=6em
+	},
+]
+
+\node[input] (parameter) at (-6, 0) {Parameter \\ $\mathbf{x}$};
+
+\node[trafo] (dis) at (-2, 2) {Discrete};
+\node[trafo] (int) at (2, 2) {$\mathbf{x} \in \mathbb{Z} \backslash \{\infty\}$};
+
+\draw[ultra thick,->] (parameter) -- node [above left] {$\mathbf{x} \notin \mathbb{R}$} (dis.west);
+\draw[ultra thick,->] (dis) -- node [above] {Integer?} node [below] {Enum?}  (int);
+
+\node[output] (one) at (6, 2) {One-Hot Matrix};
+
+\draw[ultra thick,->] (int) -- (one);
+
+\node[trafo] (con) at (-2, -2) {Continuous};
+\node[trafo] (per) at (2, -2) {Estimate $T$};
+
+\draw[ultra thick,->] (parameter) -- node [below left] {$\mathbf{x} \in \mathbb{R}$} (con.west);
+\draw[ultra thick,->] (con) -- node [above] {Periodic?} (per);
+
+\node[output] (sin) at (6, -2) {Sine / Cosine};
+
+\draw[ultra thick,->] (per) -- (sin);
+
+\end{tikzpicture}

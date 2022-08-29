@@ -1,0 +1,75 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	trafo/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+]
+
+\node[input] (inp) at (-6, 2) {Solar Array\\ Y+};
+\node[input] (inn) at (6, 2) {Solar Array\\ Y-};
+
+\node[input] (cmp) at (-6, 0.5) {CM};
+\node[input] (cmn) at (6, 0.5) {CM};
+
+\draw[ultra thick,-] (inp) -- (cmp);
+\draw[ultra thick,-] (inn) -- (cmn);
+
+\node[trafo] (sadmp) at (-3, 2) {SADM};
+\node[trafo] (sadmn) at (3, 2) {SADM};
+
+\draw[ultra thick,->] (inp.east) -- (sadmp.west);
+\draw[ultra thick,->] (inn.west) -- (sadmn.east);
+
+\node[trafo] (pcu) at (0, 0) {PCU};
+\node[] (pcup) at (-3mm, 2) {};
+\node[] (pcun) at (3mm, 2) {};
+
+\draw[ultra thick,-] (sadmp.east) -- (pcup.center);
+\draw[ultra thick,<-] (pcu.north)+(-3mm,0) -- (pcup.center);
+\draw[ultra thick,-] (sadmn.west) -- (pcun.center);
+\draw[ultra thick,<-] (pcu.north)+(3mm,0) -- (pcun.center);
+
+\node[output] (bat1) at (-3, -2.5) {Battery 1};
+\node[output] (bat2) at (0, -2.5) {Battery 2};
+\node[output] (bat3) at (3, -2.5) {Battery 3};
+
+\draw[ultra thick,<->] (pcu.south)+(-3mm,0) -- (bat1.north);
+\draw[ultra thick,<->] (pcu.south) -- (bat2.north);
+\draw[ultra thick,<->] (pcu.south)+(3mm,0) -- (bat3.north);
+
+\node[trafo] (plpdu) at (-5, -4) {PL-PDU};
+\node[trafo] (sspdu) at (5, -4) {SS-PDU};
+
+\draw[ultra thick, ->, to path={-| (\tikztotarget)}] (pcu) edge (plpdu.north);
+\draw[ultra thick, ->, to path={-| (\tikztotarget)}] (pcu) edge (sspdu.north);
+
+\end{tikzpicture}

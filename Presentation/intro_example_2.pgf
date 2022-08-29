@@ -1,0 +1,46 @@
+﻿\begin{tikzpicture}
+	\begin{axis}[
+		ylabel={Temperature [K]},
+		xlabel={Time [h]},
+		height=4cm,
+		width=5cm,
+		ymin=170, ymax=240,
+		axis x line=bottom,
+		axis y line=left,
+]
+	\addplot[only marks, mark size=1.5pt, color=blue, mark=*] plot coordinates {
+		(0, 200)
+		(1, 210)
+		(2, 220)
+		(3, 225)
+		(4, 220)
+		(5, 215)
+		(6, 210)
+		(7, 200)
+		(8, 190)
+	};
+	\addplot[name path=sdh, color=blue] plot coordinates {
+		(0, 200)
+		(1, 208)
+		(2, 216)
+		(3, 219)
+		(4, 212)
+		(5, 205)
+		(6, 198)
+		(7, 186)
+		(8, 174)
+	};
+	\addplot[name path=sdl, color=blue] plot coordinates {
+		(0, 200)
+		(1, 212)
+		(2, 224)
+		(3, 231)
+		(4, 228)
+		(5, 225)
+		(6, 222)
+		(7, 214)
+		(8, 206)
+	};
+	\addplot[blue!40, opacity=0.6] fill between[of=sdl and sdh];
+	\end{axis}
+\end{tikzpicture}

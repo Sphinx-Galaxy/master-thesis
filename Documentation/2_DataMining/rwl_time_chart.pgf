@@ -1,0 +1,25 @@
+﻿\begin{tikzpicture}
+ 
+\begin{axis} [
+	ybar,
+	height=6cm,
+	width=12cm,
+	title={RWL Entry Times},
+	ymin=0,
+	xlabel={time slot [sec]},
+	ylabel={[\%]},
+	symbolic x coords={$< 5$, $5 - 10$, $10 - 15$, $15 - 20$, $20 - 25$, $25 - 30$, $30 <$}]
+\addplot[
+	top color=blue,
+	bottom color=blue!50] coordinates {
+    ($< 5$, 33.6) 
+    ($5 - 10$, 1.4) 
+    ($10 - 15$, 0.4) 
+    ($15 - 20$, 31.7) 
+    ($20 - 25$, 0.2) 
+    ($25 - 30$, 3.7) 
+    ($30 <$, 29.0)
+};
+\end{axis}
+ 
+\end{tikzpicture}

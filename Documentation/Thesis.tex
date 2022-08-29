@@ -1,0 +1,100 @@
+% Document setup
+\input{Misc/preamble_usepackages}
+
+\usepackage{csquotes}
+\usepackage{float}
+
+\def\reporttype{Master Thesis}
+\def\reporttitle{Neural Network Prediction Uncertainty for Spacecraft Housekeeping Analysis}
+\def\reportauthor{Mattis Jaksch}
+\def\reportsurveyfirst{Prof. Dr. Andreas Rittweger}
+\def\reportsurveysecond{Dr. Frank Dannemann}  %Auskommentieren für Projektarbeiten oä (ohne Zweitgutachter)
+\def\reportadvisor{Jan-Gerd Meß}
+\def\reportdate{18.01.2022}
+
+\newboolean{plaintitle}
+\setboolean{plaintitle}{false}	%true = Titelseite ohne graue Balken
+
+% Start here
+\begin{document}
+
+\include{Misc/FancyCover}
+
+% Vorspann
+{\frontmatter
+	{\pagestyle{scrheadings}
+		\setcounter{page}{1}
+		\pagenumbering{roman}
+
+\thispagestyle{empty}
+%\input{Misc/Explaination2015}		
+\includepdf[pages=1-2]{Misc/Einverstaendniserklaerung_QM}
+\thispagestyle{empty}
+
+%\shipout\null
+
+\newpage \hfill
+\newpage \hfill
+
+\tableofcontents
+
+\chapter*{Abbreviations}
+
+\begin{acronym}
+\acro{aec}[AEC]{Auto-Encoder}
+\acro{ai}[AI]{Artificial Intelligence}
+\acro{cm}[CM]{Control Module}
+\acro{cnn}[CNN]{Convolutional Neural Network}
+\acro{dlr}[DLR]{Deutsches Zentrum für Luft- und Raumfahrt}
+\acro{ecss}[ECSS]{European Cooperation for Space Standardization}
+\acro{esa}[ESA]{European Space Agency}
+\acro{ft}[FT]{Fourier Transformation}
+\acro{fnn}[FNN]{Feed-Forward Neural Network}
+\acro{lstm}[LSTM]{Long Short-Term Memory}
+\acro{ml}[ML]{Machine Learning}
+\acro{nn}[NN]{Neural Network}
+\acro{pcu}[PCU]{Power Control Unit}
+\acro{plpdu}[PL-PDU]{Payload Power Distribution Unit}
+\acro{sspdu}[SS-PDU]{Subsystem Power Distribution Unit}
+\acro{relu}[ReLU]{Rectified Linear Unit}
+\acro{rnn}[RNN]{Recurrent Neural Network}
+\acro{rwa}[RWA]{Reaction Wheel Assembly}
+\acro{sc}[S/C]{Spacecraft}
+\acro{ssa}[SSA]{Singular Spectrum Analysis}
+\acro{ssd}[SSD]{Singular Spectrum Decomposition}
+\end{acronym}
+
+% Hauptteil
+{\mainmatter
+	\pagestyle{scrheadings}
+	\pagenumbering{arabic}
+	
+\chapter*{Abstract}
+The booming space industry shows us, that with growing computing power and the large number of satellites, we as humans are not capable any more to keep track of all the data being produced. This does not only include mass produced commercial spacecraft but also tailored scientific missions by now. But as measurements with high data throughput are already sorted by advanced algorithms, the satellites health status described by it's housekeeping data is still under strict surveillance by humans on a higher level. This shows that there is still room for improvement regarding spacecraft autonomy with methods from the newly emerging field of machine and deep learning.
+
+Therefore we created ways and generic methods for analysing specifically satellite housekeeping data. This meant to first understand the data, to regularize and normalize it. And secondly, to identify as well as generate useful features for a further automatic process. With this process, a regression analysis was made to predict future values and also give the variance to increase the credibility of the result. All this has been done with parts of the Rosetta housekeeping data as a case study.
+
+%%% Start Include Files %%%
+\input{1_Introduction/Introduction.tex}
+
+\input{2_DataMining/DataMining.tex}
+
+\input{3_Prediction/Prediction.tex}
+
+\input{4_GUI/GUI.tex}
+
+\chapter{Conclusion}
+Our goal was to understand satellite housekeeping data and to prepare it for the use of \acfp{nn}, with the case study of the Rosetta mission. This goal was achieved in parts. We were able to successfully pre-analyse the data and put into a usable format. The neural networks we built were able to achieve a reasonable prediction and uncertainty with two of the four Rosetta reaction wheels. Mostly the troublesome reaction wheels B and C were the cause for the poor performance of the \acp{nn}. The second example of the solar array did show that \acp{nn} are by no means magic bullets to solve everything.% and that sometimes conventional methods are far more useful and powerful.
+
+In chapter 1 we showed recent works of \ac{nn} w.r.t. to satellite housekeeping and health status and it became clear, that \acf{ai} is needed and can provide a great improvement in parts over conventional solutions and humans. We also introduced the Rosetta mission with its problems in the reaction wheels as a practical demonstrator. This was taken in chapter 2 to explain generic methods to pre-analyse and clean data. Here we also tried to get promising results from standard time-series analysis methods like X-11, which unfortunately were unable to predict anything due to missing periodic components in the data. \newline
+The cleaned data was then fed into the \acp{nn} in chapter 3, where we went over the various layers and hyperparameters available in the machine learning framework Tensorflow. With that, a small model was generated and used to successfully produce predictions as well as an uncertainty. The result were compared by a previously developed baseline. It was seen that \acp{nn} are able to perform equally well or better than the baseline by a factor of 2. Even the uncertainty did show to be accurate for most parts. \newline
+In the last chapter 4, this whole content of the previous chapters was taken into a GUI to visualize the process. %This includes the data analysis and feature selection, the \ac{nn} model with its layers and hyperparameters, and the final prediction output in form of a graphical plot.
+
+This thesis can now be a start for rapid-prototyping, to implement and test various prototypes of \acp{nn} on satellites and their payloads.
+
+\appendix
+
+\bibliographystyle{unsrtdin} %gerdipl} %unsrt %gerdipl
+\bibliography{Appendix/books} % BIB-Datei mit Literatur
+
+\end{document}

@@ -1,0 +1,71 @@
+%\thispagestyle{empty}
+%---------------------------- Titlepage Background ----------------------------
+\definecolor{titlepagecolor}{RGB}{246,243,234}
+\ifplaintitle
+\backgroundsetup{
+	scale=1,
+	angle=0,
+	opacity=1,
+	contents={\begin{tikzpicture}[remember picture,overlay]
+		\node[inner sep=0pt] (uni) at (-6.5,13.65)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_uni}};
+%		\node[inner sep=0pt] (exzellent) at (8.5,13.75)
+%		{\includegraphics[height=.0125\paperwidth]{./logo/logo_uniexzellent}};
+		\node[inner sep=0pt] (dlr) at (-6.5,-13.75)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_dlr}};
+		\end{tikzpicture}}
+}
+\else
+\backgroundsetup{
+	scale=1,
+	angle=0,
+	opacity=1,
+	contents={\begin{tikzpicture}[remember picture,overlay]
+		\path [fill=titlepagecolor] (-0.5\paperwidth,13.25) rectangle (current page.north east);
+		\path [fill=titlepagecolor] (-0.5\paperwidth,12.5) rectangle (5.25,13.5);
+		\path [fill=titlepagecolor] (-0.5\paperwidth,-12.5) rectangle (current page.south east);
+		\node[inner sep=0pt] (uni) at (-6.5,13.65)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_uni}};
+%		%\node[inner sep=0pt] (exzellent) at (8.5,13.65)
+%		%{\includegraphics[height=.0125\paperwidth]{./logo/logo_uniexzellent}};
+		\node[inner sep=0pt] (dlr) at (-6.5,-13.5)
+		{\includegraphics[height=.075\paperwidth]{./logo/logo_dlr}};
+		\end{tikzpicture}}
+}
+\fi
+
+\definecolor{coolgray}{rgb}{0.90625,0.8828125,0.8359375}
+% darkened gray
+\colorlet{mygray dark}{coolgray!80!black}
+
+% rename colors
+\colorlet{coolgray 1}{mygray dark} % used for footline background
+\begin{titlepage}
+\BgThispage
+        {\scshape % in Kapitelchen, weil es schicker ist
+        Universität Bremen\\
+        \small{Fachbereich Produktionstechnik\\
+        Deutsches Zentrum für Luft- und Raumfahrt (DLR)}}\\[2cm]
+\begin{center}
+        {\Large \reporttype}\\ [2cm]
+        {\Huge \textbf	\reporttitle}
+        \par
+    \vskip 3em
+    {\large \lineskip .75em
+    \begin{tabular}[t]{c}
+        { by}\\[.5em]
+        {\Large \reportauthor}\\[1em]
+    \end{tabular}
+    \par}%
+    \vfill
+\end{center}
+\begin{tabular}[t]{ll}
+{ Assessor:} & \reportsurveyfirst\\
+\ifdefined\reportsurveysecond  { Second Assessor:} & \reportsurveysecond\\\\ \else \\\fi
+{ Supervisor:}& \reportadvisor\\ \\
+{ Submitted:}&{\reportdate\par}
+\end{tabular}
+\par
+\vfil
+\null
+\end{titlepage}

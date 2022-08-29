@@ -1,0 +1,57 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=4em,
+		minimum width=8em
+	},
+	neuron/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=4em,
+		minimum width=8em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=4em,
+		minimum width=8em
+	},
+]
+
+\node[input] (ui) at (-6, 2) {User \\ Input};
+\node[neuron] (graphic1) at (0, 2) {Graphic \\ Elements};
+\node[neuron] (model) at (6, 0) {Model \\ Handling};
+
+\node[neuron] (graphic2) at (0, -2) {Graphic \\ Elements};
+\node[output] (uo) at (-6, -2) {User \\ Output};
+
+\draw[ultra thick, ->] (ui) -- node [above] {Event} (graphic1);
+\draw[ultra thick, ->] (graphic1) -- node [above] {Data} (model);
+\draw[ultra thick, ->] (model) -- node [above] {Result} (graphic2);
+\draw[ultra thick, ->] (graphic2) -- node [above] {Update} (uo);
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=20em, minimum width=10em] 
+(SubWindow) at (0, 0) {};
+\node[above] at (SubWindow.north) {SubWindow.py};
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=10em, minimum width=10em] 
+(SubModule) at (6, 0) {};
+\node[above] at (SubModule.north) {SubModule.py};
+
+\end{tikzpicture}

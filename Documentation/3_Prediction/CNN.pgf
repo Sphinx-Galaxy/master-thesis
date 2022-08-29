@@ -1,0 +1,66 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=2.5em,
+		minimum width=2.5em
+	},
+	neuron/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=2.5em,
+		minimum width=2.5em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=2.5em,
+		minimum width=2.5em
+	},
+	scale=1.2,
+]
+
+% Input
+\foreach \x in {0, ..., 5}
+	\foreach \y in {0, ..., 3}
+		\node[input] (in\x\y) at (\x-7, -\y+2) {$x_{\x,\y}$};
+
+\node[rectangle, opacity=0.4,fill=black, dashed, draw=black, align=center, minimum height=9em, minimum width=9em] 
+(input) at (in41.center) {};
+\node[above] at (input.north) {Input};
+
+% Kernel
+\foreach \x in {0, ..., 2}
+	\foreach \y in {0, ..., 2}
+		\node[neuron] (nin\x\y) at (\x+1, -\y+2) {$w_{\x,\y}$};
+ 
+\node[rectangle, dashed, draw=black, align=center, minimum height=9em, minimum width=9em] 
+(kernel) at (nin11) {};
+\node[above] at (kernel.north) {Kernel};
+
+\node[neuron] (act) at (0,-2.5) {$\times$};
+\node[] (acts) at (-1,-2.5) {};
+
+\node[output] (out) at (4,-2.5) {$y_{0,3}$};
+
+\draw[thick,-, to path={-| (\tikztotarget)}] (input) edge (acts.center);
+\draw[thick,->] (acts.center) -- (act);
+\draw[thick,->, to path={-| (\tikztotarget)}] (kernel) edge (act);
+\draw[thick,->] (act) -- (out);
+
+\end{tikzpicture}

@@ -1,0 +1,71 @@
+%\thispagestyle{empty}
+%---------------------------- Titlepage Background ----------------------------
+\definecolor{titlepagecolor}{RGB}{246,243,234}
+\ifplaintitle
+\backgroundsetup{
+	scale=1,
+	angle=0,
+	opacity=1,
+	contents={\begin{tikzpicture}[remember picture,overlay]
+		\node[inner sep=0pt] (uni) at (-6.5,13.65)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_uni}};
+		\node[inner sep=0pt] (exzellent) at (8.5,13.75)
+		{\includegraphics[height=.0125\paperwidth]{./logo/logo_uniexzellent}};
+		\node[inner sep=0pt] (itemme) at (-6.5,-13.75)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_itemme}};
+		\end{tikzpicture}}
+}
+\else
+\backgroundsetup{
+	scale=1,
+	angle=0,
+	opacity=1,
+	contents={\begin{tikzpicture}[remember picture,overlay]
+		\path [fill=titlepagecolor] (-0.5\paperwidth,13.25) rectangle (current page.north east); 
+		\path [fill=titlepagecolor] (-0.5\paperwidth,12.5) rectangle (5.25,13.5); 
+		\path [fill=titlepagecolor] (-0.5\paperwidth,-12.5) rectangle (current page.south east);
+		\node[inner sep=0pt] (uni) at (-6.5,13.65)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_uni}};
+		\node[inner sep=0pt] (exzellent) at (8.5,13.65)
+		{\includegraphics[height=.0125\paperwidth]{./logo/logo_uniexzellent}};
+		\node[inner sep=0pt] (itemme) at (-6.5,-13.75)
+		{\includegraphics[height=.05\paperwidth]{./logo/logo_itemme}};
+		\end{tikzpicture}}
+}
+\fi
+
+\definecolor{coolgray}{rgb}{0.90625,0.8828125,0.8359375}
+% darkened gray
+\colorlet{mygray dark}{coolgray!80!black}
+
+% rename colors
+\colorlet{coolgray 1}{mygray dark} % used for footline background
+\begin{titlepage}
+\BgThispage
+        {\scshape % in Kapitelchen, weil es schicker ist
+        Universität Bremen\\
+        \small{Fachbereich Physik, Elektro- und Informationstechnik\\
+        Institut für Theoretische Elektrotechnik und Mikroelektronik (ITEM)}}\\[2cm]
+\begin{center}
+        {\Huge \bf \reporttype}\\ [2cm]
+        {\Large	\reporttitle}
+        \par
+    \vskip 3em
+    {\large \lineskip .75em
+    \begin{tabular}[t]{c}
+        { von}\\[.5em]
+        {\Large \reportauthor}\\[1em]
+    \end{tabular}
+    \par}%
+    \vfill
+\end{center}
+\begin{tabular}[t]{ll}
+{ Gutachter:} & \reportsurveyfirst\\
+\ifdefined\reportsurveysecond  { Zweitgutachter:} & \reportsurveysecond\\\\ \else \\\fi
+{ Betreuer:}& \reportadvisor\\\\
+{ Eingereicht am:}&{\reportdate\par}
+\end{tabular}
+\par
+\vfil
+\null
+\end{titlepage}

@@ -1,0 +1,70 @@
+﻿\begin{tikzpicture}[
+	top/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=red!20,
+		bottom color=red!40,
+		minimum height=4em,
+		minimum width=10em
+	},
+	mid/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=4em,
+		minimum width=10em
+	},
+	bottom/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		text width=9em,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=4em,
+		minimum width=10em
+	},
+]
+
+\node[top] (top) at (0, 3) {SubWindow.py};
+
+\node[mid] (mid_data) at (-6, 0) {Data Tab};
+\node[mid] (mid_net) at (0, 0) {Network Tab};
+\node[mid] (mid_pred) at (6, 0) {Prediction Tab};
+
+\node[bottom] (bottom_data) at (-6, -3) {\begin{itemize} 
+	\item Form Input
+	\item Radio Buttons
+	\item Data Plot
+\end{itemize}};
+
+\node[bottom] (bottom_net) at (0, -3) {\begin{itemize} 
+	\item NN Texteditor	
+	\item Hyperparameter
+	\item NN Options
+\end{itemize}};
+
+\node[bottom] (bottom_pred) at (6, -3) {\begin{itemize} 
+	\item Example Plot
+	\item[] 
+	\item[]
+\end{itemize}};
+
+\draw[ultra thick,->, to path={-| (\tikztotarget)}] (top) edge (mid_data);
+\draw[ultra thick,->] (top) edge (mid_net);
+\draw[ultra thick,->, to path={-| (\tikztotarget)}] (top) edge (mid_pred);
+
+\draw[ultra thick,->] (mid_data) -- (bottom_data);
+\draw[ultra thick,->] (mid_net) -- (bottom_net);
+\draw[ultra thick,->] (mid_pred) -- (bottom_pred);
+
+\end{tikzpicture}

@@ -1,0 +1,84 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	model/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=3em,
+		minimum width=30em
+	},
+	hidden/.style={
+		rectangle,
+		align=center,
+		minimum height=3em,
+		minimum width=3em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+]
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=5em, minimum width=20em] 
+(input) at (0, 2) {};
+\node[above] at (input.north) {Aleatoric / Deterministic Past Input};
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=5em, minimum width=5em] 
+(input) at (6, 2) {};
+\node[above] at (input.north) {Deterministic Future Input};
+
+%\draw[dashed] (-5, 1) rectangle (3, 3);
+
+% Input
+\node[input] (in1) at (-3,2) {$x(0)$};
+\node[input] (in2) at (-1,2) {$x(1)$};
+\node[input] (in3) at (1,2) {$x(2)$};
+\node[input] (in4) at (3,2) {$x(3)$};
+
+\node[input] (in5) at (6,2) {$x(4)$};
+
+% Model
+\node[model] (mod) at (1.5,0) {Model};
+\node[hidden] (mod1) at (-3,0) {};
+\node[hidden] (mod2) at (-1,0) {};
+\node[hidden] (mod3) at (1,0) {};
+\node[hidden] (mod4) at (3,0) {};
+
+\node[hidden] (mod5) at (6,0) {};
+
+\draw[thick,->] (in1.south) -- (mod1.north);
+\draw[thick,->] (in2.south) -- (mod2.north);
+\draw[thick,->] (in3.south) -- (mod3.north);
+\draw[thick,->] (in4.south) -- (mod4.north);
+
+\draw[thick,->] (in5.south) -- (mod5.north);
+
+\node[output] (out1) at (1.5,-2) {$y(4)$};
+\draw[thick,->] (mod.south) -- (out1.north);
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=5em, minimum width=5em] 
+(output) at (out1.center) {};
+\node[below] at (output.south) {Prediction Output};
+
+\end{tikzpicture}

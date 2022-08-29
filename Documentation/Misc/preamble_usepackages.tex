@@ -1,0 +1,207 @@
+%-------------------------- Documentclass --------------------------
+%\documentclass[a4paper,11pt,BCOR5mm,headsepline,liststotoc,bibtotoc]{scrbook} %,smallheadings
+\documentclass[%
+%draft,     % Entwurfsstadium
+draft=false,
+final,      % fertiges Dokument
+%%%% --- Schriftgröße ---
+12pt,
+%smallheadings,    % kleine Überschriften
+%normalheadings,   % normale Überschriften
+%bigheadings,       % große Überschriften
+%%%% === Seitengröße ===
+% letterpaper,
+% legalpaper,
+% executivepaper,
+a4paper,
+% a5paper,
+% landscap,
+%%%% === Optionen für den Satzspiegel ===
+%BCOR5mm,          % Zusaetzlicher Rand auf der Innenseite
+%DIV11,            % Seitengroesse (siehe Koma Skript Dokumentation !)
+%DIVcalc,         % automatische Berechnung einer guten Zeilenlaenge
+%1.1headlines,     % Zeilenanzahl der Kopfzeilen
+%headinclude,     % Kopf einbeziehen
+%headexclude,      % Kopf nicht einbeziehen
+%footinclude,     % Fuss einbeziehen<
+%footexclude,      % Fuss nicht einbeziehen
+%mpinclude,       % Margin einbeziehen
+%mpexclude,        % Margin nicht einbeziehen
+pagesize,         % Schreibt die Papiergroesse in die Datei.
+% Wichtig fuer Konvertierungen
+%%%% === Layout ===
+%oneside,         % einseitiges Layout
+twoside,          % Seitenraender für zweiseitiges Layout
+%onecolumn,        % Einspaltig
+%twocolumn,       % Zweispaltig
+%openany,         % Kapitel beginnen auf jeder Seite
+openright,        % Kapitel beginnen immer auf der rechten Seite
+% (macht nur bei 'twoside' Sinn)
+%cleardoubleplain,    % leere, linke Seite mit Seitenstil 'plain' 
+cleardoublepage=empty,% leere, linke Seite mit Seitenstil 'empty'
+titlepage,        % Titel als einzelne Seite ('titlepage' Umgebung)
+%notitlepage,     % Titel in Seite integriert
+captions=tableheading,
+%%%% --- Absatzeinzug ---
+%                 % Absatzabstand: Einzeilig,
+%parskip,         % Freiraum in letzter Zeile: 1em
+%parskip*,        % Freiraum in letzter Zeile: Viertel einer Zeile
+%parskip+,        % Freiraum in letzter Zeile: Drittel einer Zeile
+%parskip-,        % Freiraum in letzter Zeile: keine Vorkehrungen
+%                 % Absatzabstand: Halbzeilig
+%halfparskip,     % Freiraum in letzter Zeile: 1em
+%halfparskip*,    % Freiraum in letzter Zeile: Viertel einer Zeile
+%halfparskip+,    % Freiraum in letzter Zeile: Drittel einer Zeile
+%halfparskip,     % Freiraum in letzter Zeile: keine Vorkehrungen
+%                 % Absatzabstand: keiner
+parskip=false,    % Eingerückt (Standard)
+%%%% --- Kolumnentitel ---
+headsepline,      % Linie unter Kopfzeile
+%headnosepline,   % keine Linie unter Kolumnentitel
+footsepline,      % Linie über Fusszeile
+%footnosepline,   % keine Linie unter Fussnote
+plainfootsepline, % Linie über Fußzeile auf "`leeren Seiten"'
+%%%% --- Kapitel ---
+chapterprefix,   % Ausgabe von 'Kapitel:'
+%nochapterprefix,  % keine Ausgabe von 'Kapitel:'
+%%%% === Verzeichnisse (TOC, LOF, LOT, BIB) ===
+%listof=totoc,      % Tabellen & Abbildungsverzeichnis ins Inhaltsverzeichnis
+%listof=notoc,	  % Tabellen & Abbildungsverzeichnis ins nicht ins Inhaltsverzeichnis
+%idxtotoc,        % Index ins TOC
+bibliography=totoc, % Bibliographie ins TOC
+%bibtotocnumbered, % Bibliographie im TOC nummeriert
+%liststotocnumbered, % Alle Verzeichnisse im TOC nummeriert      
+toc=graduated,    % eingereuckte Gliederung
+%tocleft,         % Tabellenartige TOC
+%listof=graduated,      % eingereuckte LOT, LOF
+%listsleft,       % Tabellenartige LOT, LOF
+%pointednumbers,  % Überschriftnummerierung mit Punkt, siehe DUDEN !
+%numbers=noenddot, % Überschriftnummerierung ohne Punkt, siehe DUDEN !
+%openbib,         % alternative Formatierung des Literaturverzeichnisses
+%%%% === Matheformeln ===
+%leqno,           % Formelnummern links
+%fleqn,            % Formeln werden linksbuendig angezeigt
+]{scrbook}%     Klassen: scrartcl, scrreprt, scrbook
+
+% Kodierung und Lokalisierung
+\usepackage[T1]{fontenc}     	% LaTeX-interne Schriftkodierung
+\usepackage[utf8]{inputenc}  	% UTF8! Test: äöüÄÖÜß (Umlaute müssten richtig dargestellt werden)
+\usepackage[british]{babel}  	% Deutsche Titel, Silbentrennung, etc.
+\usepackage{lmodern}			% Skalierbare Fonts
+
+
+%Text
+\usepackage[onehalfspacing]{setspace}	%Zeilenabstand
+\usepackage[a4paper,left=1in, right=1in, bottom=1.5in]{geometry}	%feste Definition der Seitenränder
+\usepackage[svgnames,table, hyperref]{xcolor}
+\usepackage[hidelinks]{hyperref}			% interne Verlinkungen in klickbare Verweise
+\usepackage{relsize}			% Schriftgröße verändern
+\clubpenalty=10000 				% Schusterjungen
+\widowpenalty=10000 			% Hurenkinder
+\displaywidowpenalty=10000 		% Für Math-Modus
+\setlength\parindent{0pt} 		% keine Einrückung beim Absatz
+\usepackage{microtype}			% Mikrotypographie
+
+%Seitenlayout für die Seiten auf denen ein neues Kapitel beginnt
+\setkomafont{chapterprefix}{\Large}
+\setkomafont{chapter}{\raggedright\Huge}
+\renewcommand*{\chapterformat}{%
+	\raggedleft%
+	\MakeUppercase{\chapapp}{\Huge\nobreakspace\thechapter}
+	\vskip .2ex
+	\raisebox{\ht\strutbox}[.5pt][0pt]{\rule{\textwidth}{.5pt}}%
+	\vskip-1\baselineskip
+}
+\renewcommand*{\chapterheadendvskip}{%
+\vspace{-1\baselineskip}\noindent{\setlength{\parskip}{0pt}\Huge\hrulefill\par}%
+\vspace{\baselineskip}
+}
+
+%Kopf-/Fußzeilen
+\usepackage{scrlayer-scrpage}
+\pagestyle{scrheadings} 
+
+% Abstände
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\setlength{\parindent}{0mm}
+\setlength{\itemsep}{0ex plus 0.2ex}
+
+% Abkuerzungsverzeichnis: (list of acronyms)
+\usepackage[printonlyused]{acronym} %only print acronyms which are used in the text
+
+%Mathe und Co
+\usepackage{dsfont}					% Einheitsmatrix
+\usepackage{amsfonts}   			% Matheumgebungen
+\usepackage{amssymb}
+\usepackage{amsmath}  	
+\usepackage{mathptmx}			
+\usepackage[right]{eurosym} 		% Euro-Zeichen
+\usepackage{textcomp} 				% Zusätzliche Symbolzeichen
+
+%Grafiksatz
+\usepackage{color}					% Farben
+\usepackage{xcolor}					% Farben
+\usepackage{graphicx}				% Bildsatz
+\usepackage{pdfpages} 				% Kann PDF-Dateien einbinden
+\usepackage[bf]{caption}			% fette Abbildungbeschriftung
+\usepackage{subcaption}				% Unterbilder (Fig. 1a)
+\usepackage{acronym}				% Abkürzungsverzeichnis
+\usepackage[some]{background}		% Hintergründe (Titelseite)
+
+
+\usepackage{lscape}
+% Literaturverweise mit (Autor Jahr) nach DIN
+\usepackage[numbers,square]{natbib} 
+%\bibpunct{[}{]}{;}{x}{,}{,}
+
+
+% Quellcode
+\usepackage{listings}				% Source-Code einbinden 
+
+
+%Einheiten
+\usepackage{units}
+\usepackage{siunitx}
+\sisetup{locale = US, per-mode = fraction, exponent-product = \cdot, output-decimal-marker = {.}}
+\DeclareSIUnit\byte{Byte}
+
+% Tikz/Pgfplots 
+\usepackage{tikz}
+\usepackage{pgfplots,ifthen}
+\pgfplotsset{compat=1.17}
+%\pgfkeys{/pgf/number format/.cd ,use comma ,set thousands separator={ }}
+\usepgfplotslibrary{groupplots}
+\usepackage{tikzscale}				% Skalierung
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
+
+% Tabellen
+\usepackage{booktabs} 				% Besonders schöne Tabellen (Bottomrule...)
+\usepackage{tabularx}				% Erweiterungen
+\usepackage{longtable}				% Tabelle mit Seitenumbruch
+\usepackage{supertabular}			% ""
+\usepackage{diagbox}
+\usepackage{multirow}				% mehrzeilige Tabellen
+\usepackage{array}
+
+
+\usepackage{bigstrut} % fuer Tabellen (Zeilen mit kleinem Abstand und nicht gequetscht!)
+
+\usepackage{rotating} % hier: um eine große Tabelle zu drehen
+%	% BEISPIEL
+%	\begin{sidewaystable}
+%  	 \begin{tabular}{@{}*{4}{l}@{}}
+%  	       Nominativ & Genetiv & Dativ & Akkusativ \\
+%  	       die Frau & der Frau & der Frau & die Frau
+%  	 \end{tabular}
+%	\end{sidewaystable} 
+
+%\renewcommand\tabcolsep{3pt} % die Zahl (hier: 3) gibt den Abstand zwischen den Spalten für alle Tabellen an (default ist: 6pt)
+%--------------------------------------------
+
+
+%Beautiful lstlistning
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{%
+ \parbox{\textwidth}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}\vskip-4pt}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+\lstset{frame=lrb,xleftmargin=\fboxsep,xrightmargin=0.045\textwidth}

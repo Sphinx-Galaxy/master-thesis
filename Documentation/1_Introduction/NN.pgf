@@ -1,0 +1,73 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	neuron/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+]
+
+\node[input] (in1) at (-5, 2) {$x_1$};
+\node[input] (in2) at (-5, 0) {$x_n$};
+\node[input] (in3) at (-5, -2) {$x_N$};
+
+\node[neuron] (nin1) at (0, 2) {$\varphi_1 \left(\sum_n^N x_n\cdot W_{n,1}\right)$};
+\node[neuron] (nin2) at (0, 0) {$\varphi_k \left(\sum_n^N x_n\cdot W_{n,k}\right)$};
+\node[neuron] (nin3) at (0, -2) {$\varphi_K \left(\sum_n^N x_n\cdot W_{n,K}\right)$};
+
+\draw[thick,->] (in1.east) -- (nin1.west);
+\draw[thick,->] (in1.east) -- (nin2.west);
+\draw[thick,->] (in1.east) -- (nin3.west);
+
+\draw[thick,->] (in2.east) -- (nin1.west);
+\draw[thick,->] (in2.east) -- (nin2.west);
+\draw[thick,->] (in2.east) -- (nin3.west);
+
+\draw[thick,->] (in3.east) -- (nin1.west);
+\draw[thick,->] (in3.east) -- (nin2.west);
+\draw[thick,->] (in3.east) -- (nin3.west);
+
+\node[output] (out1) at (5, 2) {$y_1$};
+\node[output] (out2) at (5, 0) {$y_m$};
+\node[output] (out3) at (5, -2) {$y_M$};
+
+\draw[thick,->] (nin1.east) -- (out1.west);
+\draw[thick,->] (nin1.east) -- (out2.west);
+\draw[thick,->] (nin1.east) -- (out3.west);
+
+\draw[thick,->] (nin2.east) -- (out1.west);
+\draw[thick,->] (nin2.east) -- (out2.west);
+\draw[thick,->] (nin2.east) -- (out3.west);
+
+\draw[thick,->] (nin3.east) -- (out1.west);
+\draw[thick,->] (nin3.east) -- (out2.west);
+\draw[thick,->] (nin3.east) -- (out3.west);
+
+\end{tikzpicture}

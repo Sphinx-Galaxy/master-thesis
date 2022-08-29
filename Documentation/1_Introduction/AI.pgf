@@ -1,0 +1,25 @@
+﻿\begin{tikzpicture}[
+    block/.style={
+      rectangle,
+      draw=black,
+      thick,
+      align=center,
+      rounded corners,
+      minimum height=5em,
+	  minimum width=15em
+    },
+]
+
+\node[block, top color=blue!10, bottom color=blue!20, minimum width=40em, minimum height=13em] (AI) at (0,0) {};
+\node[below right, align=left] at (AI.north west) {\underline{\textbf{Artificial Intelligence}} 
+\\ \\ Techniques that allow \\ computers to mimic human \\ behaviour (e.g. pathfinding)};
+
+\node[block, top color=blue!20, bottom color=blue!40, minimum width=25em, minimum height=10em] (ML) at (7em,-1em) {};
+\node[below right, align=left] at (ML.north west) {\underline{\textbf{Machine Learning}}
+\\ \\ Learn without being explicitly \\ programmed (e.g. classification)};
+
+\node[block, top color=blue!40, bottom color=blue!80, minimum width=10em, minimum height=7em] (DL) at (14em,-2em) {};
+\node[below right, align=left] at (DL.north west) {\underline{\textbf{Deep Learning}}
+\\ \\ Extract patterns with \\ neural networks (e.g. \\ speech recognition)};
+
+\end{tikzpicture}

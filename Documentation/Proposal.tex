@@ -1,0 +1,56 @@
+\documentclass[10pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[british]{babel}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{csquotes}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{url}
+
+%\usepackage[margin=40mm]{geometry}
+
+\title{Master Thesis Proposal}
+\author{Mattis Jaksch}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\flushleft
+
+\section*{Working Title}
+Neural Network Prediction Uncertainty for Spacecraft Housekeeping Analysis.
+
+\section*{Problem Description}
+With the growth of processing power in embedded systems, artificial intelligence has found its way into processing data on spacecraft \cite{athmos} \cite{mars-entry}. The main focus in research lies within the area of machine and deep learning \cite{ai-dlr-survey} \cite{mining-survey}. This involves simple housekeeping analysis as well as complex decisions regarding engine control during manoeuvres. 
+In this topic, there are two major issues. First, almost any of the neural networks produces exclusive results with no confidence interval telling the uncertainty in the prediction. Second, as the neural networks are developed for special use cases, the comparison, modification and reproduction becomes infeasible.
+
+\section*{Solution approach}
+To tackle the first problem, a mechanism to quantify the uncertainty of neural networks will be established. This will then be adapted to make predictions in time-series from spacecraft housekeeping data. For the general topic of uncertainty in neural networks, the research of \cite{yarin-thesis} will be used.
+
+For the second problem, an abstract technique or strategy will be developed to allow and motivate the use of various neural networks. One crucial step towards this is the introduction of a time-series data-mining technique to ensure an equal and useful input to the neural network. Additionally, the uncertainty prediction has to be made universal as well or at least easily integrable.
+
+\section*{Working Structure}
+To prepare the time-series for the neural network, a data mining method will be picked (e.g. \cite{tm-mining} \cite{ssd}). The second step, choosing a neural network, will be done mostly as a demonstration as this step is later open to user input and research. 
+
+The neural network will then be evaluated with respect to the prediction uncertainty. For that, various methods (e.g. \cite{yarin-dropout} \cite{model-confidence} \cite{weight-confidence}) have to be researched and compared to find one universal solution.
+
+\bigbreak
+
+For demonstration and later use, these steps shall be accurately described and additionally build into a graphical interface representing the working strategy. 
+As demonstration case the housekeeping data from the Rosetta Mission the reaction wheels \cite{rosetta-maintenance} and solar panels will be used.
+
+\bigbreak
+
+All together the solution shall made to fit as an input to the currently developed Model Management Service.
+
+\small
+\bibliographystyle{abbrv} %gerdipl} %unsrt %gerdipl
+\bibliography{Appendix/books} % BIB-Datei mit Literatur
+
+\end{document}

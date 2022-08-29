@@ -1,0 +1,332 @@
+\chapter{Data Mining with Time Series}
+\label{c:datamining}
+Data mining is an interdisciplinary field between data acquisition, analysis, statistic, informatics and deep learning. Here the purpose of data mining is restricted to the areas of preparation and statistical pre-analysis, so it can later be fed into the neural network. These preparation steps are made to gain an overview on the data and ensure that the data is neither anomalous nor ill conditioned for the \ac{nn}. \newline
+These steps are always crucial and even more in an on-board software pipeline, where the data must be cleaned and sanitized to avoid anomalous results in case the sensor input is erroneous.
+
+For the Rosetta dataset we are exploring, this means we first take a look at the characteristics of the dataset. This includes the total number of points, missing values and sampling-rate, mean and variance, and other statistical measures. Once we have an overview, the data can be potentially corrected, interpolated and sanitized for further analysis. In this chapter we are only concerned with the statical and statistical techniques such as the well known and eagerly chosen \ac{ft}, as well as the mentioned X-11. From this we will already deduce some preliminary results before we head into the next chapter to take our analysis to the field of machine learning.
+
+\section{Exploring Dataset Characteristics}
+For the Rosetta housekeeping data, we will first explore the reaction wheels, and then the solar arrays. The datasets are analysed for the mentioned characteristics. Additionally a simple \ac{ft} will be run to get an idea of the frequency spectrum. \newline
+Time-wise the datasets from the original source were split into the years, respective quarters of the year and multiple files. The split datasets were first all collected and then merged into one dataset.
+
+\textbf{Remark:} The datasets will be organized as two-dimensional arrays where the column refers to a parameter (e.g speed, inclination, torque) and the row refers to the set of values of the parameters at a certain point in time.
+
+\subsection{Reaction Wheels}
+The \acf{rwa} consists of four wheels assembled in a tetrahedral configuration. The datasets contains information about 5 parameters:
+
+\begin{enumerate}
+\item Speed $[\SI{}{\per\second}]$
+\item Direction $\mathbb{Z} \in [0, 1]$
+\item Angular momentum $[\SI{}{\newton\meter\second}]$
+\item Friction coefficient $[\SI{}{\newton\meter\second}]$
+\item Friction torque estimation $[\SI{}{\newton\meter}]$
+\end{enumerate}
+
+For the friction it has to be noted, that it could only be measured while no control force was applied and the wheel was freely decelerating. Hence these datapoints might be sparse.
+
+While analysing the datasets it was discovered, that sometimes in a row a measurement of a parameter was missing, like in the example shown in table \ref{t:rwa_missing} below:
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.1\textwidth}}
+\toprule
+Time $[\SI{}{\second}]$	& Speed  $[\SI{}{\per\second}]$		& $[\SI{}{\newton\meter}]$	& $\hdots$ \\ \midrule
+$\num{0}$				& $\num{1200}$						& $\num{7.623e-6}$			&			\\
+$\num{3600}$				& $\num{1120}$						& $\num{7.625e-6}$			&			\\
+$\num{7200}$				& $\num{1080}$						& Nan						&			\\
+$\num{10800}$			& Nan								& Nan						&			\\
+$\num{14400}$			& $\num{990}$						& $\num{7.612e-6}$			&			\\ \bottomrule
+\end{tabular}
+\caption{\ac{rwa} dataset example with missing values}
+\label{t:rwa_missing}
+\end{table}
+
+
+Figure \ref{f:rwa_missing_chart} shows the total number of rows of the dataset in blue. In red is the number of missing entries for the speed and in green the missing entries of the friction as an example. 
+
+Two things can be deduced from there:
+
+\begin{enumerate}
+\item The parameters have an unequal amount of data points every year.
+\item Even in the same time period, the parameters are measured unequally often.
+\end{enumerate}
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/rwl_missing_chart.pgf}
+\caption{Total entries in blue and missing ones in red and green}
+\label{f:rwa_missing_chart}
+\end{figure}
+
+For the unequal measurement periods, a second analysis is done in figure \ref{f:rwa_time_bin}. Here, the time-delta between single measurements is calculated and categorized into bins of 5 seconds. From there we can see again two things:
+
+\begin{enumerate}
+\item The measurements can be put into 3 major bins, one is that  less than 5 seconds, 15 to 20 seconds and more 30 seconds.
+\item Roughly $\approx 70\%$ of the points fall into the \enquote{30 seconds or less} category and $\approx 99\%$ into the \enquote{5 minutes or less} category.
+\end{enumerate}
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/rwl_time_chart.pgf}
+\caption{Time bins for all the measurements}
+\label{f:rwa_time_bin}
+\end{figure}
+
+As an example for one reaction wheel, the plot in figure \ref{f:rwa_example} shows the friction and speed of the \ac{rwa} B in the fourth quarter in 2008 right before the anomalies occurred. It can be seen that the friction follows the speed as expected, except where the wheel is rapidly accelerated. \newline
+Another important detail to note for later is that one cycle of speed up/down takes at least $\SI{2e5}{\second}$ (respective 55 hours).
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/rwb_2008_q4_prune.pgf}
+\caption{Data example from 2008'q4 reaction wheel B}
+\label{f:rwa_example}
+\end{figure}
+
+\subsection{Solar Array}
+The datasets of the solar array and power subsystem is a bit more complicated than the \ac{rwa}. In figure \ref{f:solar_array_block} the block diagram of the whole subsystem is shown. The datasets for the solar array include their display error, angular position, misalignment and incidence angle. Both arrays are mounted perpendicular to the xz-axis of the \ac{sc}, so in the positive-/negative direction of the y-axis. After the arrays follows the \ac{pcu} with parameters about voltage and current. For completeness, the \ac{plpdu} and \ac{sspdu} also contain information about voltage and current. \newline
+Our main concern are the solar arrays themselves and the \ac{pcu}. The most important parameters for our analysis there are the voltage and current on the \ac{cm} and the misalignment of the arrays. The \acp{cm} are special solar cells within the solar array. They are operating in an open- and respective short-circuit mode to provide current and voltage information. This provides an estimate of the health state for the whole array. 
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/solar_array_block.pgf}
+\caption{Solar array block diagram with the Solar Array Drive Mechanism (SADM), Power Control Unit (PCU) and following batteries as well as Power Distribution Units (PDU)}
+\label{f:solar_array_block}
+\end{figure}
+
+As with the \ac{rwa} we will check the dataset for missing values and measurement periods.
+
+Figure \ref{f:solar_missing_chart} shows the total number of possible entries for the parameters in blue. The total number of measurements is therefore less than the \ac{rwa}. Also the number of missing entries is substantially higher. In red, the \ac{cm} current and voltage are shown, they both have an equal amount of measurement points. The solar array misalignment entries are depicted in green. It can be seen, that especially the first year of service had the most measurements taken.
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/sa_missing_chart.pgf}
+\caption{Total entries in blue and missing ones in red and green}
+\label{f:solar_missing_chart}
+\end{figure}
+
+Again, for the unequal measurement periods, a second analysis is done in figure \ref{f:solar_time_bin}. The time distances between entries are similar to the \ac{rwa} and have their greatest percentages at \enquote{less than five seconds} ($\approx 29\%$), \enquote{15 to 20 seconds} ($\approx 41\%$) and \enquote{more than 30 seconds} with $\approx 21\%$. Again, 99\% of the measurements fall in the \enquote{5 minutes or less} category, which is later important for interpolation.
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/sa_time_chart.pgf}
+\caption{Time bins for all the measurements}
+\label{f:solar_time_bin}
+\end{figure}
+
+As the solar arrays don't have any duty cycles like the reaction wheels, an overview on the operation over the whole time from 2004 till the end of 2010 is shown in figure \ref{f:solar_example}. If we look at the voltage in red, a trend can already be observed as the voltage continuously degrades over time, which is a well known effect of radiation \cite[p. 45f]{space-handbook}. The same holds true for the current in blue, except for a bump around $\SI{1.8e8}{\second}$ (respective year 2009). \newline
+The decrease in voltage / current and therefore power can also be explained with Rosettas increasing distance from the sun over time.
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/sa_example.pgf}
+\caption{\ac{cm} data example from 2004  to the end of 2010}
+\label{f:solar_example}
+\end{figure}
+
+\section{Mind the Gap}
+In both datasets it was observed, that datapoints were missing and that they were unequally measured time-wise. Hence we need to take care of these gaps. Basically, there are two major options to handle missing data, either extra-/interpolating and generating more intermediate data points derived from existing points with a specific mathematical fit-function. Or as second option to group datapoints together on the lowest common denominator and average them.
+
+We decided for the latter and grouped the datapoints to a time-delta of one hour and averaged them. This also did result in a data reduction which helps for analysis as the total amount of data went from roughly $\num{2e7}$ datapoints to $\approx \num{6e4}$. A reduction in this dimension can be justified in this case as the manoeuvres for the reaction wheels were not done in a range a minutes, but in a matter of hours and days, hence we assume no important information is abandoned. The same holds true for the solar arrays.
+
+\section{Further Cleaning and Feature Engineering}
+Before the dataset can be fed into an analysis model, further cleaning steps should be taken to get rid of artefacts and to distil the information content. This includes noise and the elimination of obvious anomalous values. The cleaned dataset can then be normalized to a pre-defined value range. As last step, feature engineering is performed during which certain parameters can be selected, deselected, transformed or artificially created to help the model make predictions.
+
+	\subsection{Noise}
+	Any data we measure in this world is subject to noise. Some more and some less. The most important metric here is the signal-to-noise ratio:
+	
+	\begin{equation}
+	\text{SNR} = 10\log\frac{P_{signal}}{P_{noise}}
+	\end{equation}
+	
+	This ratio can never be improved after the measurement has been done. Therefore care must be taken to not loose any signal during pre-processing and transforming the data.
+	
+	The only possibility here to improve the models understanding of the data is to put it through a low-pass filter. The key idea here is, that the sample rate is much higher than the rate of change of the signal. Therefore the data can be slightly smoothed. As this method reduces the amount of datapoints, some signal quality or potential information will be lost. But as benefit the processing power needed might be reduced. \newline
+	Another option is a moving average with similar properties. 
+	
+	As an example in figure \ref{f:noise_example} a noisy sine signal with the two smoothing methods is shown:
+	
+	\begin{figure}[htb]
+	\centering
+	\input{2_DataMining/noise_example.pgf}
+	\caption{Example of smoothing a noisy sine signal measured with a high sample rate.}
+	\label{f:noise_example}
+	\end{figure}
+	
+	\subsection{Anomalous Values}
+	Anomaly Detection is technically a whole chapter on its own. Here we care only about the values that are obviously anomalous as the might be out of their possible range or not even a number. Even though one point in a thousand might not seem severe and will most likely not disturb the models performance much, they are an easy catch and can still help improve the analysis.
+	
+	In our case no severe anomalous points were discovered except for the gaps mentioned in the section before.
+	
+	\subsection{Normalizing}
+	Normalizing values is especially important when dealing with \acp{nn} \cite[p. 101ff]{python-deep-learning}. One reason is to avoid having small values that might be subject to rounding errors. The same holds true for big values or negative values that might not be representable.	There are two general approaches to normalization. 
+	
+	First and most common one is subtracting the mean and dividing by the standard-deviation: 
+
+	\begin{equation}
+	\tilde{\mathbf{x}} = \frac{\mathbf{x} - \overline{\mathbf{x}}}{\sigma}
+	\end{equation}		
+	
+	The second one works by moving all values to a range of $\tilde{\mathbf{x}}\in [0, 1]$ by finding the minimum and maximum of the dataset: 
+	
+	\begin{equation}
+	\tilde{\mathbf{x}} = \frac{\mathbf{x} - \min \{\mathbf{x}\}}{\max\{\mathbf{x}\} - \min\{\mathbf{x}\}}
+	\end{equation}		
+
+	In this thesis we decided for the latter as this technique is easily applicable on spacecraft as we are already doing boundary checks with fixed minimum and maximum values.
+	
+	For \ac{ml} applications there is one thing to consider: \underline{which} part of the data provides the normalization. As the datasets are usually divided into training, validation and test-set, only the training-set is used to calculate the minimum, maximum, mean and variance, to not leak any information of the test data into the learning process.
+
+	\subsection{Feature Engineering}
+	Feature Engineering takes a huge part in the success and failure of \ac{ml} models. Here we need to select the right features/parameters, transform them or even generate artificial ones.
+	
+	For selecting the correct features, there are no general rules or recipes, they just have to be guessed and tried by the engineer. But in the following is a guide on how to understand, sort and work with different parameters.
+	
+		\subsubsection{Deterministic Parameter}
+		As the name suggests, deterministic parameters are known at any given timepoint $t$. These are for example all parameters that are set or configured in the spacecraft, like an engine or subsystem switching on and off, or the positioning of the solar array. \newline
+		Some parameters can also be put in this category, if they are easy to extrapolate, like the orbit or position in the solar system.
+		
+		For the \ac{rwa} of Rosetta, the deterministic parameters were the speed of the wheels and direction. And for the solar array only the position of the array w.r.t. to the spacecraft itself.
+		
+		\subsubsection{Aleatoric Parameter}
+		Aleatoric parameters are the opposite of deterministic features, they are only known from past measurements and cannot be extrapolated into the feature easily. This concerns temperatures, voltages, currents, rf-signals and any scientific measurement.
+		
+		\subsubsection{One-Hot Encoding}
+		One-Hot encoding is an important feature when using \ac{ml}. Here the state of a parameter can be described with discrete states instead of continues values. This transformation works with any kind of parameter that has discrete states. An example flow is shown in the following:
+
+		\begin{equation*}
+		\mathbf{x} = \begin{pmatrix}
+		\text{Monday} \\
+		\text{Wednesday} \\
+		\text{Friday} \\
+		\text{Monday} \\
+		\text{Thursday} \\
+		\text{Saturday} \\
+		\end{pmatrix} \rightarrow
+		\mathbf{x} = \begin{bmatrix}
+		1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+		0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+		0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+		1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+		0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+		0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+		\end{bmatrix}
+		\end{equation*}				
+		
+		With the example of the \ac{rwa} of Rosetta, the parameter for the wheel direction was saved as a plain number. Zero for backward, one for forward. This value was transformed to a discrete integer and not subject to the normalization, so it could be used in a one-hot encoding matrix.		
+		
+		\subsubsection{Artificial Features}
+		One can also create features to support the learning process. A starting point for that are periodic processes like a satellite orbiting earth. The orbit itself might not appear in the measured parameters directly, but it can be superimposed as the orbit parameters are known. A sine and cosine with the orbit periodicity can be added to aid the learning process. Additionally a second sine and cosine can be applied with the periodicity of the earth moving around sun to further support seasonal changes. Figure \ref{f:artificial_feature_example} shows an example flow-chart for artificial features to keep in mind for future engineering tasks.
+		
+		Artificial features can be of course included in the deterministic features.
+		
+		\begin{figure}[htb]
+		\centering
+		\input{2_DataMining/artificial_feature_example.pgf}
+		\caption{Quick flow-chart to generate artificial features}
+		\label{f:artificial_feature_example}
+		\end{figure}
+		
+\section{Fourier Transformation}
+The Fourier Transformation brings the time signal into a frequency domain. Here its used to get an overview of the frequencies present in our time-series. Sometimes a seasonal trend or anomalous oscillation can be identified. For later steps it might also be useful in case we need to choose an appropriate windowing size.
+
+For our data, the time window for the \ac{ft} was chosen to be in the length of $T = \SI{90}{day}$ (approximately one quarter year) with the above mentioned samplerate of $t_s = \SI{60}{\minute}$. The windows were set to be 50\% overlapping when sliding over the series. No specific windowing function was applied, which results in a rectangular window. In the end, the windowed \ac{ft} results were summed up to show the spectrum of the whole series.
+
+For all data (\ac{rwa} and solar array), no special peaks could be found. All plots did show high values in the lower frequencies and were monotonically decreasing with the exception of noise over the whole spectrum. In figure \ref{f:rwl_fft} the spectrum of the friction coefficient parameter of all four reaction wheels can be seen. For most part, all four wheels follow the same curve. Slight exceptions are only within wheel B and C at the beginning and end of the spectrum. This might already indicate an anomaly or just be a coincidence.
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/rwl_prune_fft.pgf}
+\caption{Reaction wheel friction coefficient of all four wheels}
+\label{f:rwl_fft}
+\end{figure}
+
+The frequency spectrum of the current and voltage of the solar \ac{cm} is shown in figure \ref{f:sa_fft}. Two peaks can be found in the higher frequencies with periods at $T_1 = \SI{280}{\minute}$ and $T_2=\SI{110}{\minute}$. Unfortunately, these frequencies can not be explained by \ac{sc} behaviour or environmental influences. But for further analysis, they are not interesting for now as the peaks are much too low.
+
+\begin{figure}[htb]
+\centering
+\input{2_DataMining/sa_prune_fft.pgf}
+\caption{\ac{cm} Current and Voltage Frequency Spectrum}
+\label{f:sa_fft}
+\end{figure}
+
+\section{X11 Method}
+The X11 method is a tool for identifying (future) trends, seasonal variations and residual noise in time-series \cite{x11-book}. It's mostly used in economical context to estimate company income, losses or product demands. In the area of decomposition methods, multiple modifications to the calculation flow can be made. In the following the general idea of decomposing time-series is shown.
+
+A time series can be written mathematically with the additive linear superposition:
+
+\begin{equation*}
+x(t) = \underbrace{x_t(t)}_{Trend} + \underbrace{x_s(t)}_{Seasonal} + \underbrace{x_n(t)}_{Noise}
+\end{equation*}
+ 
+To get the trend $x_t(t)$, a moving average is applied with the specified window size. After that, the trend is subtracted from the series. The windows are now applied again over the series, but they are now added and averaged to get the seasonal component. This can again be subtracted from $x(t)$ and will leave the residual noise $x_n(t)$. \newline
+For our case we will use the seasonal decomposition function from the \textit{statsmodels API} in Python \cite{statsmodels}.
+
+As the frequency analysis in the step before didn't show any interesting frequency peaks or gave an indication, various time-windows for the X11 method had to be tried. A good result was achieved by setting the window size to 90 days, just as before with the \ac{ft}.
+
+\subsection{Reaction Wheels}
+In figure \ref{f:rwl_x_observed} to \ref{f:rwl_x_residual} the friction coefficient as health indicator of the reaction wheels is presented for reaction wheel B. As the result for the friction measurement is mainly dependant on the wheels spinning, the result is not constant and approximates zero when the wheels also reach zero spin. This makes it also quite impossible to form a future trend line. Figure \ref{f:rwl_x_seasonal} shows the seasonal trend of the reaction wheel with the chosen period of 90 days. As no real periodicity could be observed with the \ac{ft}, the season cannot carry much valuable information. The final figure \ref{f:rwl_x_residual} shows the \enquote{noise} or residual values. Here the sudden increase in friction can be directly observed and it becomes clear, that the increase in friction was neither a trend nor a predictable event.
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/rwb_friction_observed.pgf}
+\caption{Friction coefficient observed}
+\label{f:rwl_x_observed}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/rwb_friction_trend.pgf}
+\caption{Friction coefficient trend}
+\label{f:rwl_x_trend}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/rwb_friction_seasonal.pgf}
+\caption{Friction coefficient seasonal}
+\label{f:rwl_x_seasonal}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/rwb_friction_residual.pgf}
+\caption{Friction coefficient residual}
+\label{f:rwl_x_residual}
+\end{figure}
+
+What can be deduced is a maximum of a possible coefficient, telling something about the health status. With reaction wheel B it can be seen, that the friction increases around $\SI{1e8}{\second}$ ($\approx$ year 2008) where also the increased friction was detected by the operation team. As the wheel is lubricated one year later in 2009, the friction is visibly reduced around $\SI{1.4e8}{\second}$ until all wheels again increase their friction at the end of 2010 before the hibernation.
+
+\subsection{Solar Array}
+In figure \ref{f:sag_x_observed} to \ref{f:sag_x_residual} the voltage of the solar array can be seen in its various parts. The trendline in figure \ref{f:sag_x_trend} has a bit more information than the trendline of the reaction wheels. An obvious trend towards a lower voltage can be observed. Unfortunately the seasonal figure \ref{f:sag_x_seasonal} and the noise figure \ref{f:sag_x_residual} don't contain much valuable information.
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/sag_volt_observed.pgf}
+\caption{Solar array voltage observed}
+\label{f:sag_x_observed}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/sag_volt_trend.pgf}
+\caption{Solar array voltage trend}
+\label{f:sag_x_trend}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/sag_volt_seasonal.pgf}
+\caption{Solar array voltage seasonal}
+\label{f:sag_x_seasonal}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{2_DataMining/sag_volt_residual.pgf}
+\caption{Solar array voltage residual}
+\label{f:sag_x_residual}
+\end{figure}
+
+\section{Conclusion}
+The chapter about data-mining did show general features of the used dataset with basic statistical methods. It was seen for the Rosetta Housekeeping data, that datapoints were measured in unequal timesteps and had to be interpolated to get a common samplerate / periodicity. The next step was to find interesting frequencies for later analysis, but this proved to be difficult as there was no specific oscillation or seasonality. Only the magnitude over the whole spectrum gave some indications of differences between the four reaction wheels.
+Following this, the X11-method for trend and seasonality analysis didn't find much more information in the datasets. Neither for the reaction wheels nor for the solar array, even though the solar array performance follows a decreasing trend. This might be due to the effect, that this data still does not include any seasons and the window size might have been chosen much larger to represent and extrapolate the decreasing trend accordingly.

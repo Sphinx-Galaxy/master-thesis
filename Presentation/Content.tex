@@ -1,0 +1,475 @@
+\section{Introduction}
+
+\begin{frame}
+	\frametitle{Prediction}
+	
+\begin{minipage}{0.45\textwidth}
+\begin{figure}
+\centering
+\input{./intro_example_1.pgf}
+\caption{Simple Prediction}
+\end{figure}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\only<2>{\begin{figure}
+\centering
+\input{./intro_example_2.pgf}
+\caption{Prediction with Uncertainty}
+\end{figure}}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Prediction Uncertainty}
+	
+\begin{minipage}{0.3\textwidth}
+\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth]{./intro_cat_c.jpg}
+\caption{\\ 99\% Cat vs. 1\% Dog \\ \hfill \\ (\url{de.wikipedia.org/wiki/Hauskatze})}
+\end{figure}
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+\only<2->{\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth]{./intro_dog_c.jpg}
+\caption{\\ 1\% Cat vs. 99\% Dog \\ \hfill \\ (\url{de.wikipedia.org/wiki/Haushund})}
+\end{figure}}
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+\only<3->{\begin{figure}
+\centering
+\includegraphics[width=0.99\textwidth]{./intro_horse_c.jpg}
+\caption{\\ 50\% Cat vs. 50\% Dog \\ \hfill \\ (\url{de.wikipedia.org/wiki/Hauspferd})}
+\end{figure}}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Artificial Intelligence}
+
+\scriptsize
+\begin{figure}
+\centering
+\input{./AI.pgf}
+\caption{Areas of A.I., Machine Learning and Deep Learning}
+\end{figure}
+
+\end{frame} 
+
+\begin{frame}
+	\frametitle{State of the Art}
+	
+\begin{itemize}
+\visible<2->{\item Processing Power}
+\visible<3->{\item \textbf{A}utomated \textbf{T}elemetry \textbf{H}ealth \textbf{MO}nitoring \textbf{S}ystem by DLR \cite{athmos} \cite{athmos-sub}}
+\visible<4->{\item[] 
+\item Yarin Gal \enquote{Uncertainty in Deep Learning} \cite{yarin-thesis} \cite{yarin-dropout}
+\item Python Tensorflow and Tensorflow\_Probability by Google \cite{tf-web} \cite{tf-prop-example}}
+\end{itemize}
+
+\end{frame} 
+
+\begin{frame}
+	\frametitle{Rosetta Example Case}
+	
+\begin{itemize}
+\item Deep space mission towards comet Tschurjumow-Gerassimenko \cite{rosetta-url}
+\visible<2->{\item Timeline:
+	\begin{itemize}
+	\item (2004) Spacecraft launch
+	\item \alert<3->{(2008 to 2010) Reaction wheel B and C failed}
+	\item (2011) Hibernation mode
+	\item (2014) Reach of destination
+	\end{itemize}}
+\item[]
+\visible<3->{\alert{\item Solar array degradation}}
+\end{itemize}
+
+\end{frame} 
+
+\section{Datamining}
+
+\begin{frame}
+	\frametitle{Gathering data about data}
+
+\scriptsize
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.1\textwidth}}
+\toprule
+Time $[\SI{}{\second}]$	& Speed  $[\SI{}{\per\second}]$		& $[\SI{}{\newton\meter}]$	& $\hdots$ \\ \midrule
+$\num{0}$				& $\num{1200}$						& $\num{7.623e-6}$			&			\\
+$\num{3600}$				& $\num{1120}$						& $\num{7.625e-6}$			&			\\
+$\num{7200}$				& $\num{1080}$						& Nan						&			\\
+$\num{10800}$			& Nan								& Nan						&			\\
+$\num{14400}$			& $\num{990}$						& $\num{7.612e-6}$			&			\\ \bottomrule
+\end{tabular}
+\caption{Reaction wheel assembly dataset example with missing values}
+\label{t:rwa_missing}
+\end{table}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Gathering data about data}
+
+\begin{itemize}
+\visible<1->{\item Check for missing data
+\item Check for anomalies}
+\visible<2->{\item Common denominator}
+\visible<3->{\item Prepare for neural network
+\begin{itemize}
+\item Training (80\%)
+\item Validation (10\%)
+\item Test (10\%)
+\end{itemize}}
+\end{itemize}	
+
+\end{frame}
+
+%\begin{frame}
+%	\frametitle{Feature Engineering}
+%
+%\begin{table}
+%\centering
+%\begin{tabular}{b{0.35\textwidth}b{0.35\textwidth}}
+%\toprule \\
+%Feature			& Description \\ \midrule
+%Deterministic	& Known at all times \\
+%Aleatoric		& Unknown measurements \\
+%\visible<2->{One-Hot Encoding	& Discrete states \\
+%Artificial		& Expert design} \\ \bottomrule
+%\end{tabular}
+%\end{table}
+%	
+%\end{frame}
+
+\begin{frame}
+	\frametitle{Feature Engineering}
+
+\scriptsize
+
+\begin{tikzpicture}[
+	block/.style={
+		rectangle,
+		thick,
+		draw=black,
+		align=center,
+		rounded corners,
+		minimum height=4em,
+		minimum width=8em
+	},
+	scale=0.75
+]
+
+\node[block, top color=green!80!black,	bottom color=green!100!black] (dfl) at (-5, 3) {Deterministic \\ Feature};
+\node[block, top color=green!80!black,	bottom color=green!100!black] (dfr) at (5, 3) {Known at all \\ Times};
+\draw[ultra thick, -] (dfl) -- node [above] {E.g. Trajectory} (dfr);
+
+\node[block, top color=blue!60,	bottom color=blue!80] (afl) at (-5, 1) {Aleatoric \\ Feature};
+\node[block, top color=blue!60,	bottom color=blue!80] (afr) at (3, 1) {(Unknown) \\ Measurements};
+\draw[ultra thick, -] (afl) -- node [above] {E.g. Temperature} (afr);
+
+\visible<2->{
+\node[block, top color=red!60,	bottom color=red!80] (ohel) at (-5, -1) {One-Hot \\ Enconding};
+\node[block, top color=red!60,	bottom color=red!80] (oher) at (3, -1) {Discrete \\ States};
+\draw[ultra thick, -] (ohel) -- node [above] {E.g. Payload On/Off} (oher);}
+
+\visible<3->{
+\node[block, top color=gray!60,	bottom color=gray!80] (al) at (-5, -3) {Artificial \\ Feature};
+\node[block, top color=gray!60,	bottom color=gray!80] (ar) at (5, -3) {Expert \\ Design};
+\draw[ultra thick, -] (al) -- node [above] {E.g. Periodic orbit} (ar);
+\draw[ultra thick, -] (al) -- node [below] {E.g. Fourier Transformation} (ar);}
+
+\end{tikzpicture}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Data Analysis}
+	
+\begin{figure}
+\centering
+\input{./sa_example.pgf}
+\caption{Solar Array}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Data Analysis}
+	
+\begin{figure}
+\centering
+\input{./rwb_2008_q4_prune.pgf}
+\caption{Reaction Wheel B}
+\end{figure}
+
+\end{frame}
+
+%\begin{frame}
+%	\frametitle{Frequency Analysis}
+%	
+%\begin{figure}
+%\centering
+%\input{./rwl_prune_fft.pgf}
+%\caption{Frequency spectrum of the four reaction wheels A, B, C and D}
+%\end{figure}
+%
+%\end{frame}
+
+\section{Prediction Uncertainty}
+
+\begin{frame}
+	\frametitle{Neural Networks and Layers - Dense}
+	
+\begin{figure}
+\centering
+\scalebox{0.75}{\input{./FNN.pgf}}
+\caption{Feed Forward Neural Network with Dense Layers}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural Networks and Layers - Convolution}
+	
+\begin{figure}
+\centering
+\scalebox{0.75}{\input{./CNN.pgf}}
+\caption{Convolution Neural Network with Convolution Layers}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural Networks and Layers - Long Short-Term Memory}
+	
+\begin{figure}
+\centering
+\scalebox{0.75}{\input{./RNN.pgf}}
+\caption{Recurrent Neural Network with LSTM Layers}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural Networks and Layers - Lambda}
+	
+\begin{figure}
+\centering
+\only<1>{\scalebox{0.75}{\input{./tfp_example_1.pgf}}}
+\only<2>{\scalebox{0.75}{\input{./tfp_example_2.pgf}}}
+\only<3>{\scalebox{0.75}{\input{./tfp_example_3.pgf}}}
+\caption{Learning and fitting a dataset from a stochastic Process}
+\end{figure}
+
+\end{frame}
+
+\section{Demonstration and Results}
+
+\begin{frame}
+	\frametitle{GUI - Selecting Features}
+	
+\begin{figure}
+\centering
+\only<1>{\includegraphics[width=0.99\textwidth]{./gui_data_tab.jpg}}
+\only<2>{\includegraphics[width=0.99\textwidth]{./gui_data_tab_2.jpg}}
+\only<3>{\includegraphics[width=0.99\textwidth]{./gui_data_tab_3.jpg}}
+\only<4>{\includegraphics[width=0.99\textwidth]{./gui_data_tab_4.jpg}}
+\end{figure}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{GUI - Setting the Network}
+	
+\begin{figure}
+\centering
+\only<1>{\includegraphics[width=0.99\textwidth]{./gui_network_tab_2.jpg}}
+\only<2>{\includegraphics[width=0.99\textwidth]{./gui_network_tab_3.jpg}}
+\only<3>{\includegraphics[width=0.99\textwidth]{./gui_network_tab_4.jpg}}
+\end{figure}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Quantitative Measurement - Baseline model}
+	
+\begin{itemize}
+\item Assume: \hspace{1.5cm} $x(t) \overset{!}{=} \underbrace{\tilde{x}(t + 24)}_{prediction}$
+\item[]
+\visible<2->{\item Error: \hspace{1.5cm} $\varepsilon_{Base} = \left| \underbrace{x(t + 24)}_{real} - \underbrace{\tilde{x}(t + 24)}_{prediction} \right|$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Example Result}
+	
+\begin{figure}
+\centering
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel={Time [h]},
+		ylabel={[ ]},
+		height=6cm,
+		width=12cm,
+		ymin=0.4, ymax=0.6,
+		axis x line=bottom,
+		axis y line=left,
+		scale=0.9,
+		legend style={fill=black},
+]
+\only<1>{\addplot[only marks, mark size=1.5pt, color=blue, mark=*] plot coordinates {
+		(0, 0.5846440196)
+		(1, 0.5879111886)
+		(2, 0.5851085186)
+		(3, 0.5862501264)
+		(4, 0.5876534581)
+		(5, 0.5885193348)
+		(6, 0.5890411735)
+		(7, 0.5893791318)
+		(8, 0.589639008)
+		(9, 0.5898739696)
+		(10, 0.5886417031)
+		(11, 0.5818823576)
+		(12, 0.5670129061)
+		(13, 0.5390694141)
+		(14, 0.5052142143)
+		(15, 0.4871221185)
+		(16, 0.477432102)
+		(17, 0.4749464095)
+		(18, 0.4752262831)
+		(19, 0.4756105244)
+		(20, 0.4759189188)
+		(21, 0.4762377143)
+		(22, 0.4765394032)
+		(23, 0.4768138826)
+	};
+	\addlegendentry{Data}}
+\only<1-2>{\addplot[only marks, mark size=1.5pt, color=red, mark=x] plot coordinates {
+		(0, 0.5766858234)
+		(1, 0.5767528488)
+		(2, 0.5771701525)
+		(3, 0.5773177685)
+		(4, 0.577386112)
+		(5, 0.5776671827)
+		(6, 0.5777555386)
+		(7, 0.5779996989)
+		(8, 0.5782410524)
+		(9, 0.5786328957)
+		(10, 0.5774423028)
+		(11, 0.5706888248)
+		(12, 0.5555401882)
+		(13, 0.5275561155)
+		(14, 0.4931818014)
+		(15, 0.4753986834)
+		(16, 0.4662007068)
+		(17, 0.4637618943)
+		(18, 0.4642703666)
+		(19, 0.4648491296)
+		(20, 0.4650706633)
+		(21, 0.4652549777)
+		(22, 0.4653713618)
+		(23, 0.4655992947)
+	};
+	\addlegendentry{Prediction}
+	\addplot[color=green] plot coordinates {
+		(0, 0.5906858234)
+		(1, 0.5907528488)
+		(2, 0.5911701525)
+		(3, 0.5913177685)
+		(4, 0.591386112)
+		(5, 0.5916671827)
+		(6, 0.5917555386)
+		(7, 0.5919996989)
+		(8, 0.5922410524)
+		(9, 0.5926328957)
+		(10, 0.5914423028)
+		(11, 0.5846888248)
+		(12, 0.5695401882)
+		(13, 0.5415561155)
+		(14, 0.5071818014)
+		(15, 0.4893986834)
+		(16, 0.4802007068)
+		(17, 0.4777618943)
+		(18, 0.4782703666)
+		(19, 0.4788491296)
+		(20, 0.4790706633)
+		(21, 0.4792549777)
+		(22, 0.4793713618)
+		(23, 0.4795992947)
+	};
+	\addlegendentry{$2\cdot\sigma^2$}
+	\addplot[color=green] plot coordinates {
+		(0, 0.5626858234)
+		(1, 0.5627528488)
+		(2, 0.5631701525)
+		(3, 0.5633177685)
+		(4, 0.563386112)
+		(5, 0.5636671827)
+		(6, 0.5637555386)
+		(7, 0.5639996989)
+		(8, 0.5642410524)
+		(9, 0.5646328957)
+		(10, 0.5634423028)
+		(11, 0.5566888248)
+		(12, 0.5415401882)
+		(13, 0.5135561155)
+		(14, 0.4791818014)
+		(15, 0.4613986834)
+		(16, 0.4522007068)
+		(17, 0.4497618943)
+		(18, 0.4502703666)
+		(19, 0.4508491296)
+		(20, 0.4510706633)
+		(21, 0.4512549777)
+		(22, 0.4513713618)
+		(23, 0.4515992947)
+	};}
+	\end{axis}
+\end{tikzpicture}
+
+\caption{Reaction Wheel D - Friction Coefficient}
+\end{figure}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Final Results}
+	
+\scriptsize
+\begin{table}[htb]
+\centering
+\caption{Results in Comparison with the Baseline.}
+\begin{tabular}{b{0.2\textwidth}b{0.125\textwidth}b{0.125\textwidth}}
+\toprule
+Dataset				& Baseline $\Delta\varepsilon$	& $\left| \frac{\varepsilon_{Base}}{\varepsilon_{NN}} \right| - 1$	\\ \midrule
+Wheel A Friction		& $\num{0.0116}$	& 	$\num{99}$\%	\\
+Wheel B Friction		& $\num{-0.0079}$	& $\num{-25}$\%	\\
+Wheel C Friction		& $\num{-0.0023}$	& $\num{-8}$\%	\\
+Wheel D Friction		& $\num{0.0122}$		& $\num{69}$\%	\\ \midrule
+Solar Array Voltage	& $\num{-0.0035}$	& $\num{-35}$\%	\\ 
+\bottomrule
+\end{tabular}
+\end{table}	
+		
+\end{frame}
+
+\section*{Conclusion}
+
+\begin{frame}
+	\frametitle{Conclusion and Outlook}
+	
+\begin{itemize}
+\item Neural Networks can help with predictions
+\item []
+\visible<2->{\item Predictions can be enriched with information on uncertainty}
+\item []
+\visible<3->{\item GUI allows rapid prototyping}
+\end{itemize}
+\end{frame}

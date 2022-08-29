@@ -1,0 +1,160 @@
+\documentclass[10pt]{beamer}
+\usetheme{Warsaw}
+
+\setbeamercolor{normal text}{fg=white,bg=black!90}
+\setbeamercolor{structure}{fg=white}
+
+\setbeamercolor{alerted text}{fg=red!85!black}
+\setbeamercolor{onslide text}{fg=red!85!black}
+
+\setbeamercolor{item projected}{use=item,fg=black,bg=item.fg!35}
+
+\setbeamercolor*{palette primary}{use=structure,fg=structure.fg}
+\setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!black}
+\setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!black}
+\setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!black,bg=black!80}
+
+\setbeamercolor*{framesubtitle}{fg=white}
+
+\setbeamercolor*{block title}{parent=structure,bg=black!60}
+\setbeamercolor*{block body}{fg=black,bg=black!10}
+\setbeamercolor*{block title alerted}{parent=alerted text,bg=black!15}
+\setbeamercolor*{block title example}{parent=example text,bg=black!15}
+
+\setbeamercovered{transparent}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{color,soul}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={},
+    pdfsubject={},
+    pdfauthor={Mattis Jaksch},
+    pdfkeywords={},
+    % pdfpagemode=None, %deprecated
+    plainpages=false,
+    pdfstartview=Fit,
+    breaklinks=true,
+    colorlinks=false,
+    pdfhighlight=/N,
+    % define colors, even if not used
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    citebordercolor=1 1 1,
+    filebordercolor=1 1 1,
+    linkbordercolor=1 1 1,
+    menubordercolor=1 1 1,
+    % pagebordercolor=1 1 1, %deprecated
+    urlbordercolor=1 1 1,
+    % pdfborder=1 1 1 %erzeugt fehler im footer
+  }
+
+\title{Neural Network Prediction Uncertainty for Spacecraft Housekeeping Analysis}
+\author{Mattis Jaksch}
+\institute{University of Bremen}
+\date[01.06.2021]{01. June 2021}
+
+%\newcommand{\W}{\mathcal{W}}
+%\newcommand{\F}{\mathcal{F}}
+
+\subject{Presentation}
+%\AtBeginSection[]
+%{
+%  \begin{frame}
+%    \tableofcontents[currentsection]
+%  \end{frame}
+%}
+
+% Hier beginnt der redaktionelle Inhalt
+\usepackage[numbers,square]{natbib} 
+
+\usepackage{color, colortbl}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.8}
+\usepackage{pgfplotstable}
+\usepackage{subcaption}
+\usepgfplotslibrary{fillbetween}
+
+\usepackage{xcolor}					% Farben
+\usepackage{graphicx}				% Bildsatz
+
+%Einheiten
+\usepackage[]{units}
+\usepackage{siunitx}
+\sisetup{locale = US, per-mode = fraction, exponent-product = \cdot, output-decimal-marker = {.}}
+\DeclareSIUnit\byte{Byte}
+
+%\newcommand{\pref}{\text{\rm Pref}}
+%\newcommand{\successor}{\text{\rm Succ}}
+%\newcommand{\after}{\text{\rm -\underline{after}-}}
+%\newcommand{\ii}[1]{\underline{#1}}
+%\newcommand{\fun}{\rightarrow}
+%\newcommand{\dist}{\text{\rm Dist}}
+%\newcommand{\equivs}{\text{\bf equiv}}
+%\newcommand{\ol}{\overline}
+%\newcommand{\pesnot}[2]{\mathrel{\widesimsnot{#2}{#1}}}
+%\newcommand{\pe}{\sim_s}
+%\newcommand{\pes}[2]{\mathrel{\widesims{#2}{#1}}}
+%\newcommand{\sims}[1]{\stackrel{#1}{\sim}}
+%\newcommand{\id}{\mathbf{id}}
+%\newcommand{\ps}{\le_s}
+%\newcommand{\pss}[1]{\stackrel{#1}{\ps}}
+%\newcommand{\primem}{\mathbf{prime}}
+%\newcommand{\TS}{{\text{TS}}}
+%\newcommand{\ist}{\mbox{{\tt true}}}
+%\newcommand{\isf}{\mbox{{\tt false}}}
+%\newcommand{\bzgl}{bzgl.\@\xspace}
+%\newcommand{\bzw}{bzw.\@\xspace}
+%\newcommand{\ca}{ca.\@\xspace}
+%\newcommand{\dah}{d.\thinspace{}h.\@\xspace}
+%\newcommand{\Dah}{D.\thinspace{}h.\@\xspace}
+%\newcommand{\ds}{d.\thinspace{}sind\@\xspace}
+%\newcommand{\evtl}{evtl.\@\xspace}
+%\newcommand{\ia}{i.\thinspace{}Allg.\@\xspace}
+%\newcommand{\sa}{s.\ auch\@\xspace}
+%\newcommand{\su}{s.\ unten\@\xspace}
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
+\setbeamertemplate{section page}
+{
+    \begin{centering}
+    \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+    \end{beamercolorbox}
+    \end{centering}
+}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\include{Content}
+
+%\begin{frame}
+\scriptsize
+\bibliographystyle{abbrv} %gerdipl} %unsrt %gerdipl
+\bibliography{books}
+%\end{frame}
+
+\end{document}
+
+

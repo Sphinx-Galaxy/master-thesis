@@ -1,0 +1,72 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	neuron/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=3em,
+		minimum width=3em
+	},
+]
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=5em, minimum width=25em] 
+(input) at (-1, 2) {};
+\node[above] at (input.north) {Time-Series Input};
+
+%\draw[dashed] (-5, 1) rectangle (3, 3);
+
+\node[input] (in1) at (-4,2) {$x(0)$};
+\node[input] (in2) at (-2,2) {$x(1)$};
+\node[input] (in3) at (0,2) {$x(2)$};
+\node[input] (in4) at (2,2) {$x(3)$};
+
+\node[neuron] (nin1) at (-4,0) {};
+\node[neuron] (nin2) at (-2,0) {};
+\node[neuron] (nin3) at (0,0) {};
+\node[neuron] (nin4) at (2,0) {};
+
+\draw[thick,->] (in1.south) -- (nin1.north);
+\draw[thick,->] (in2.south) -- (nin2.north);
+\draw[thick,->] (in3.south) -- (nin3.north);
+\draw[thick,->] (in4.south) -- (nin4.north);
+
+\draw[thick,->] (nin1.east) -- (nin2.west);
+\draw[thick,->] (nin2.east) -- (nin3.west);
+\draw[thick,->] (nin3.east) -- (nin4.west);
+
+\node[neuron] (nout1) at (4,0) {};
+\draw[thick,->] (nin4.east) -- (nout1.west);
+
+\node[output] (out1) at (4,-2) {$y(4)$};
+\draw[thick,->] (nout1.south) -- (out1.north);
+
+\node[rectangle, dashed, draw=black, align=center, minimum height=5em, minimum width=5em] 
+(output) at (4, -2) {};
+\node[below] at (output.south) {Prediction Output};
+
+\end{tikzpicture}

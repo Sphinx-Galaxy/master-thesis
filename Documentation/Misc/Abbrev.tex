@@ -1,0 +1,40 @@
+\chapter*{Abkürzungsverzeichnis}\label{Kapitel:abbrev} % \ref{Kapitel:abbrev} 
+
+
+% Redefine font for acronyms
+\renewcommand*{\acsfont}[1]{\normalfont{\normalsize{#1}}} %default is BOLD for short versions - Problem when symbols are used
+
+
+% Add acronyms here
+
+\begin{acronym}[LONGESTACRO] %Zur Definition des Abstandes im Verzeichnis	
+	% \setlength{\itemsep}{-\parsep} % engerer Abstand zwischen den Zeilen
+		
+	% Abkuerzungsdefinition: \acro{Verweis}[Abkuerzung]{ausgeschriebene Abkuerzung}	
+	% Aufruf im Text:	
+	%    \ac{Verweis}  = normaler Aufruf ODER	
+	%    \acs{Verweis} = short version ODER	
+	%    \acl{}  = long version (without acronym) ODER	
+	%    \acf{}  = full version ODER	
+	%    \acp{}  = plural	
+	%    \acsp{} = short + plural	
+		
+	% Es gibt auch die M\"oglichkeit gezielt Einfluss auf die plurale Form zu nehmen:	
+	% \acroplural{<acronym>}[<short plural>]{<long plural>}	
+	% \newacroplural{<acronym>}[<short plural>]{<long plural>}	
+	% \acrodefplural{<acronym>}[<short plural>]{<long plural>}
+			
+	%Sortierung entspricht der späteren Anzeigereihenfolge. Ggf. also alphabetisch sortieren (Funktionalität im Editor nutzen!?)	
+	% Befehle mit „\acroextra{}“ werden nur im Verzeichnis ausgegeben.
+			
+	% Input of all acronyms starts here:	
+	%\acro{<command>}[<short>]{<long>} note: command is not able to consist of 'special characters' cmp. as a label
+	
+	\acro{AD}    [A/D]   {Analog to Digital}	
+	\acro{ASIC}  [ASIC]  {Application Specific Integrated Circuit\acroextra{ (\textit{anwendungsspezifische integrierte Schaltung})}}
+	
+	
+	
+\end{acronym}
+
+

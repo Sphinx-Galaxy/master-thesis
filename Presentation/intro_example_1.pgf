@@ -1,0 +1,23 @@
+﻿\begin{tikzpicture}
+	\begin{axis}[
+		ylabel={Temperature [K]},
+		xlabel={Time [h]},
+		height=4cm,
+		width=5cm,
+		ymin=170, ymax=240,
+		axis x line=bottom,
+		axis y line=left,
+]
+	\addplot[mark size=1.5pt, color=blue, mark=*] plot coordinates {
+		(0, 200)
+		(1, 210)
+		(2, 220)
+		(3, 225)
+		(4, 220)
+		(5, 215)
+		(6, 210)
+		(7, 200)
+		(8, 190)
+	};
+	\end{axis}
+\end{tikzpicture}

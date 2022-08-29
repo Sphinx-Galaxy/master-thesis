@@ -1,0 +1,56 @@
+﻿\begin{tikzpicture}
+ 
+\begin{axis} [
+	ybar,
+	height=6cm,
+	width=12cm,	
+	title={Solar Parameter Entries},
+	ymin=0,
+	xscale=1.1,
+	ymax=4e6,
+	xlabel={[year]},
+	ylabel={[sample]},
+symbolic x coords={$2004$, $2005$, $2006$, $2007$, $2008$, $2009$, $2010$}]
+
+\addplot[
+	top color=blue,
+	bottom color=blue!50] coordinates {
+($2004$, 2756131)
+($2005$, 741608)
+($2006$, 630763)
+($2007$, 586314)
+($2008$, 581064)
+($2009$, 486879)
+($2010$, 804045)
+};
+\addlegendentry{Total}
+
+ \addplot[
+ 	top color=red,
+ 	bottom color=red!50] coordinates {
+($2004$, 2325175)
+($2005$, 483706)
+($2006$, 416720)
+($2007$, 385541)
+($2008$, 380300)
+($2009$, 307714)
+($2010$, 499781)
+};
+\addlegendentry{CM Curr / Volt}
+
+ \addplot[
+ 	top color=green,
+ 	bottom color=green!50] coordinates {
+($2004$, 431386)
+($2005$, 257902)
+($2006$, 214043)
+($2007$, 200773)
+($2008$, 200764)
+($2009$, 179216)
+($2010$, 304266)
+};
+\addlegendentry{Misalignment}
+
+\end{axis}
+ 
+\end{tikzpicture}

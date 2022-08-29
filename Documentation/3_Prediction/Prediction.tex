@@ -1,0 +1,408 @@
+\chapter{Time-Series Prediction}
+\label{c:prediction}
+Formally, time-series prediction belongs to the area of regression-analysis. This is a part of mathematical statistics concerned with estimating unknown datapoints in a dataset with known or unknown distribution. A lot of research has been put on this problem since the invention of math as humans have always been eager to predict the future and get to know the unknown \cite{prediction-history}. Today this research is mostly directed towards profits and losses in economy and confirmation of scientific experiments \cite{regression-book}. \newline
+To give one example for regression-analysis, consider the method of least squares, where a polynomial function is generated and optimized to fit the points in a dataset. With the polynomial function at hand, any point inside outside of the original dataset can mapped to an unambiguous output value. But as this only allows for a rather simple or linear estimation, we move our problem to the \acp{nn} as their capacity to display complex functions and distributions is much greater.
+
+In this thesis, our idea is to make predictions with said neural networks. The way to actively measure the success of a \ac{nn} in a regression problem is to first draw a simple comparable baseline. This can be a polynomial interpolation of the data, a moving average or just a direct projection of the last seen data(points) into the future. %(assuming everything stays the same). With this baseline, a first indication on the power of the built neural networks can be quantitatively analysed and compared. 
+
+We will first discuss on how predictions with different kinds of \acp{nn} work and also explain other important features for the uncertainty prediction needed later. Then a the baseline model is set up to compare our result in the next step. In this step we will build a \ac{nn} to produce predictions including uncertainty for the next 24 hours. The timeframe of 24 hours was chosen with the assumption that the \ac{sc} will get ground contact at least once per earth rotation and has to be operate without human intervention between those encounters.
+
+\section{Predictions with Neural Networks}
+\label{c:nn-blocks}
+Before we deeply dive into the \acp{nn} we first need some definitions on our data, the prediction and the networks. As we want to predict time related data, we first define our finite time-series to be:
+
+\begin{equation}
+x(t) \in \mathbb{R} \hspace{1cm} \text{with} \hspace{1cm} \left\{t \in \mathbb{Z} \mid 0 \leq t_n \leq t_N\right\}
+\end{equation} 
+
+A future prediction is then defined as atleast one time step ahead of the last measurement taken:
+
+\begin{align*}
+x(t_N + \Delta t) = y_{pred} \hspace{1cm} \text{with} \hspace{1cm} \Delta t > 0
+\end{align*}
+
+The features/parameters explained in the previous chapter are set to be the input $\mathbf{x}$. The same holds true for the prediction output $\mathbf{y}_{pred}$, except that we only want to predict one feature there. This learnable output is also called \enquote{label} of the dataset.
+
+In order to train a \ac{nn} to predict the next times step, the dataset has to be split into windows. These windows contain a certain number of past values and a certain amount of future values. In our case we look back for 24 hours and predict future values up to 24 hours, creating a time-window of total 48 hours. These windows are then moved over the dataset, shifted by just one time-step $\Delta t = 1$ and fed to the \ac{nn}.
+
+\begin{figure}[htb]
+\centering
+\input{3_Prediction/simple_prediction.pgf}
+\caption{Prediction example with a \ac{nn} with four time steps in the past and one in the future.}
+\label{f:simple_prediction}
+\end{figure}
+
+A careful distinction has to be made between the already explained deterministic and aleatoric features. The whole input $\mathbf{x}$ of the \ac{nn} consists of past deterministic and aleatoric features, but also future deterministic features, whose explicit implementation we will see later. \newline
+In figure \ref{f:simple_prediction} a simplified example of this whole process is shown. Here the \ac{nn} model takes the last 4 time steps and a deterministic future one as an input to predict the fifth (future) time step.
+
+With this basic concept at hand, we can now go into the next sections and examine the building blocks of \acp{nn}.
+
+	\subsection{Activation Function}
+	Before we start with the networks themselves, lets take a look at the mentioned activation function of the nodes. \newline
+	Every node has a non-linear activation function, which determines the output based on the input value $z$. The first intentional function - if one takes real neurons as a basis - is the sigmoid function:
+	
+	\begin{equation}
+	S(z) = \frac{1}{1 + e^{-z}}
+	\end{equation}
+	
+	This function saturates with $\lim\limits_{z \to -\infty} \rightarrow 0$ and $\lim\limits_{z \to \infty} \rightarrow 1$. At $z=0$ it has a value of $\frac{1}{2}$ indicating that an negative input makes a neuron activation unlikely and a positive input more likely. Similar to a real neuron that needs a certain signal level to cause an activation.
+	
+	The other two functions we are going to use are the \ac{relu} and a linear output. 
+	
+	The way a \ac{relu} works is by cutting off all negative inputs and letting positive ones pass:
+	
+	\begin{equation}
+	g(z) = \max(z, 0)
+	\end{equation}
+	
+	The linear unit doesn't change the output and can be used as the final output for regression problems:
+	
+	\begin{equation}
+	f(z) = z
+	\end{equation}
+
+	\subsection{Feed-Forward Layers}
+	A Feed-Forward layer is the first type of layers for \acp{nn} \cite[p. 163f]{deep-learning}. It consists of a defined number of (hidden) nodes. These nodes have an output which is described by the activation function shown above. And they have an input that sums up the incoming signals from the previous layer given the weight matrix $\mathbf{W}$ and bias $\mathbf{b}$:
+	
+	\begin{equation}
+	\mathbf{y} = \mathbf{W}\cdot \mathbf{x} + \mathbf{b}
+	\end{equation}
+	
+	Figure \ref{f:fnn_example} shows a \ac{fnn} with 7 input values, 3 hidden layers with different amount of nodes and an output layer with 3 values. It can be seen that every input value $x_n$ is connected with the weight matrix $\mathbf{W}$ and summed up at the input of every node on the following layer. This output is again forwarded to the next layer in the same manner.
+	
+	\begin{figure}[htb]
+	\centering
+	\input{3_Prediction/FNN.pgf}
+	\caption{\acf{fnn} with 7 input values $\mathbf{x}$, 3 hidden layers with different amount of nodes and 3 final output values $\mathbf{y}$.}
+	\label{f:fnn_example}
+	\end{figure}
+	
+	\subsection{Convolution Layers}
+	Convolution is a bit more complex and typically used in image recognition (2 dimensional) rather than time-series analysis (1 dimensional) \cite[p. 321f]{deep-learning}. \newline
+	In \acp{nn} the convolution works by sliding a window over the input together with a kernel matrix. This kernel matrix is then trained to extract characteristic features from the data. Usually one starts in the first convolution layer with rough features like edge and shape detection and narrows these down in later layers to more specific features like different objects or parts of the object to be classified.
+	
+	Figure \ref{f:cnn_example} shows the idea of a convolution layer to extract information or parts from the input data. To refine and specify the features, multiple convolution layers with different input and kernel sizes can be stacked.
+
+	\begin{figure}[htb]
+	\centering
+	\input{3_Prediction/CNN.pgf}
+	\caption{\acf{cnn} with input selection on the left and kernel matrix for feature detection on the right.}
+	\label{f:cnn_example}
+	\end{figure}
+	
+	\subsection{Long Short-Term Memory}
+	The last layer to examine is the \ac{lstm}, belonging to the group of recurrent layers \cite[p. 363f]{deep-learning} \cite{lstm}. \newline
+	Recurrent layers or models have - as the name implies - a feedback from their output to their input, making them sensitive to previous (past) input. This is useful within text and speech recognition where the context of past input also matters and not just the current context. In more general terms, \acp{lstm} are useful for sequential inputs, just like time-series data.
+	
+	Recurrent layers themselves don't bear much problems per se, but stacked in a deep network the back-propagated learning gradient might cause issues by vanishing, exploding or oscillating during the training phase. As a result we will use specifically \ac{lstm} layers, which haven been designed avoid the problem of stacking multiple layers \cite{lstm}.
+	
+	%Explain LSTM
+	In figure \ref{f:lstm_module} the block diagram of an \ac{lstm} cell is shown. \acp{lstm} are nodes which include various gates to mimic a short as well as a long term memory and to avoid the mentioned propagation problems in conventional recurrent units. These gates can specifically \enquote{open} and \enquote{close} to guide information flow and let the model remember and forget information. This helps in understanding the context within the history of a dataset.
+
+	%LSTM figure
+	\begin{figure}[htb]
+	\centering
+	\input{3_Prediction/lstm-module.pgf}
+	\caption{Structure of an \ac{lstm} module. The data $\mathbf{x}_t$ propagates through activation functions (S-circle), is convoluted (X-circle) and gets offset against the internal gates ($i_t$, $o_t$ and $f_t$) to the output $\mathbf{h}_t$.}
+	\label{f:lstm_module}
+	\end{figure}
+
+	In figure \ref{f:lstm_prediction} the flow of a primitive recurrent model is shown. In contrast to the previous flow we have seen, we do not just have one model block to feed our data in to get our result. In every step we feed a datapoint and transform it trough multiple time steps to finally reach the prediction at $t_N+1$.
+	
+	\begin{figure}[htb]
+	\centering
+	\input{3_Prediction/lstm_prediction.pgf}
+	\caption{Prediction example with \acfp{lstm}}
+	\label{f:lstm_prediction}
+	\end{figure}
+		
+	In the figure \ref{f:rnn_example} below a recurrent network with two hidden layers is shown. With the multiple hidden \enquote{past} layers the idea of a history in the \ac{lstm} cells becomes clear.
+
+	\begin{figure}[htb]
+	\centering
+	\input{3_Prediction/RNN.pgf}
+	\caption{Recurrent network example with 4 inputs and 2 hidden \ac{lstm} cell layers feeding back historical information.}
+	\label{f:rnn_example}
+	\end{figure}
+	
+	\textbf{Note:} When we want to use past features together with future features as input, special care has to be taken when feeding this information into a recurrent model. Two branches have to be built in order to guide the information flow before we can combine it to a single prediction.
+	
+	\subsection{Dropout Layer}
+	The dropout layer does nothing, except dropping a certain amount of node outputs on a random basis \cite[p. 251f]{deep-learning}. This might at first seem counter-productive, but it is a important step in regularizing the network and extracting uncertainty information. %Yarin Gal made research regarding uncertainty in \acp{nn} and how to extract it via dropout layers \cite{yarin-dropout} \cite{yarin-dropout}.
+	An example regarding uncertainty in \acp{nn} and uncertainty extraction via dropout layers can be found in the research made by Yarin Gal \cite{yarin-dropout} \cite{yarin-thesis}.
+	
+	To get a rough understanding on how this works, consider the following example. Again we want to classify pictures as containing either dogs or cats. If we put a dropout layer at the end, we can randomly mask certain features that might be needed by the network for its classification task. If the picture has a strong indication that there is a cat present as it can find features like facial proportions, ears, tail, fur and whiskers, then masking a few of these features will not change the class. But if there is only a weak indication, then with masking a few features, the networks output changes drastically implying a high variance and therefore high uncertainty in the output.
+	
+	\subsection{Lambda Layer}
+	Lambda layers are specific to Tensorflow and can be filled with a user defined function. In our case we will use it to learn and output a probability distributions. In order to achieve this we have to go one step further and explicitly use the \enquote{DistributionLambda} from the Tensorflow Probability library. This allows for various distributions and applications. We can simply assume a Gaussian normal distribution and output the mean and standard-deviation for a certain input or we can even generate an ensemble of possible outputs that fits our data with a certain probability.
+
+\section{Baseline Model}
+Now that we have everything together for building a \ac{nn}, it is time to prepare a quantitative comparison to measure the networks performance. \newline
+To get a baseline model we start with the most primitive idea and see if it fulfils the given criteria and requirements. As we have not seen any periodicity in the data we assume that no specific adaptations have to be made when we choose a certain $\Delta t$ for the future prediction. Secondly, any expert knowledge is kept out of the baseline creation process as our \ac{nn} will have a similar requirement to avoid any bias and to be more universal. And at last, the baseline shall only depend on the current time-window with past and future values of our interest and without any other history or features. Therefore we chose a baseline model, that assumes the future values will be the same as the past seen ones:
+
+\begin{equation}
+x(t_N + 24) = x(t_N) + \varepsilon
+\end{equation}
+
+whereas $\varepsilon$ is the error and our measurement for the \ac{nn}. If the \ac{nn} is able to generate a result with a smaller $\varepsilon$ than the baseline model, it is considered to be a success.\newline
+In table \ref{t:baseline_error} the absolute baseline error $| \varepsilon |$ for the different datasets from our example Rosetta is given. They were collected and averaged over the complete dataset. This will later be used for comparison.
+
+\begin{table}[htb]
+\centering
+\caption{Baseline model prediction error for the respective Rosetta housekeeping datasets}
+\begin{tabular}{lll}
+\toprule
+Dataset				& $| \varepsilon_{Base} |$ \\ \midrule
+Wheel A Friction		& $\num{0.0233}$		\\
+Wheel B Friction		& $\num{0.0242}$		\\
+Wheel C Friction		& $\num{0.0266}$		\\
+Wheel D Friction		& $\num{0.0300}$		\\
+Solar Array Voltage	& $\num{0.0065}$		\\
+\bottomrule
+\end{tabular}
+\label{t:baseline_error}
+\end{table}
+		
+\section{Predicting Rosetta Housekeeping Data}
+Now that we have have all the building blocks and a baseline for comparison, we can assemble our network and use it on the Rosetta housekeeping data. We want to see if we are able to predict the future values with more accuracy than the baseline and check if the uncertainty fits the data distribution. A special look will be taken at the data of reaction wheel B as this failed in 2008. There we will try to predict the friction value which the engineers in \cite{rosetta-maintenance} identified as anomalous.
+
+In the next sections we will first build a \ac{nn} model for our predictions. To understand all the necessary steps, we look at how the uncertainty output is created, which optimizer is used, what hyperparameters are chosen and how the data and features are set up. Finally the source code of the model itself is given and described briefly. \newline
+After all is prepared, the network can be trained and compared to the baseline established in the section above.
+
+	\subsection{Neural Network Model}
+	Now for hands-on praxis, we will develop our \ac{nn} model in the following sections. \newline
+	As an underlying framework, we use the previously described Tensorflow with Tensorflow Probabilities for Python \cite{tf-web}. In this framework we will stack together the layers we discussed in chapter \ref{c:nn-blocks} together with a probability output layer. Then we will set our hyperparameters and optimizer. At the end, the source code for a generic model is presented.	
+	
+		\subsubsection{Uncertainty}
+		The uncertainty of a prediction is embedded in the Tensorflow Probabilities. It will be the last layer of our network outputting a probability distribution as a prediction. 
+		
+		To understand this kind of output, we will take a look at noisy (normally distributed) dataset in figure \ref{f:tfp_example_1} as an example\footnote{Taken from \cite{tf-prop-example}}. Here we want to apply our regression analysis. The first stage is to make a linear interpolation fitting the points with the least mean squared error (see code \ref{p:tfp_example_1}). \newline
+		Now we introduce probabilities. For that we will change the first layer and add prior assumptions to our data. The model contains a distribution as an output and will not only give the most probable linear interpolation, but also the variance estimated from the data. This we can put to use and actually produce an ensemble of different curves that would fit the dataset with a certain probability, as it can be seen in figure \ref{f:tfp_example_2}. \newline
+		Finally, we can not only estimate mean and variance, but actually the kind of distribution the data represents. If we add that estimation to the code \ref{p:tfp_example_3} we will get the result in figure \ref{f:tfp_example_3}, where we now can see, that the dataset represents most likely a noisy sine with increasing amplitude.
+		
+		\begin{figure}[htb]
+		\centering
+		\input{3_Prediction/tfp_example_1.pgf}
+		\caption{Stochastic randomly distributed data with a linear fit}
+		\label{f:tfp_example_1}
+		\end{figure}
+
+		\begin{lstlisting}[caption={Linear Fit}, language=python, label={p:tfp_example_1}]
+model = tf.keras.Sequential([
+  tf.keras.layers.Dense(1),
+  tfp.layers.DistributionLambda(
+    lambda t: tfd.Normal(loc=t, scale=1))])		
+		\end{lstlisting}
+		
+		\begin{figure}[htb]
+		\centering
+		\input{3_Prediction/tfp_example_2.pgf}
+		\caption{Stochastic randomly distributed data with an ensemble of probable linear fits}
+		\label{f:tfp_example_2}
+		\end{figure}
+		
+		\begin{figure}[htb]
+		\centering
+		\input{3_Prediction/tfp_example_3.pgf}
+		\caption{Stochastic randomly distributed data with an estimated distribution ensemble}
+		\label{f:tfp_example_3}
+		\end{figure}
+		
+		\newpage
+		\begin{lstlisting}[caption={Distribution Fit}, language=python, label={p:tfp_example_3}]
+model = tf.keras.Sequential([
+  tf.keras.layers.InputLayer(input_shape=[1]),
+  tf.keras.layers.Dense(1, kernel_initializer='ones',
+    use_bias=False),
+    
+  tfp.layers.VariationalGaussianProcess(
+    num_inducing_points=num_inducing_points, 
+    kernel_provider=RBFKernelFn(), 
+    event_shape=[1], 
+    inducing_index_points_initializer=
+      tf.constant_initializer(
+        np.linspace(*x_range,
+          num=num_inducing_points,
+          dtype=x.dtype)[..., np.newaxis]),
+    unconstrained_observation_noise_variance_initializer=(
+      tf.constant_initializer(
+        np.array(0.54).astype(x.dtype))),
+    )
+  ])	
+		\end{lstlisting}
+		
+		\subsubsection{Optimizer}
+		Optimization itself has its own books in computer science \cite[p. 267f]{deep-learning}, therefore we only examine the properties of already existing optimizers in Tensorflow to make an appropriate choice. The three most common ones are:
+		
+		\begin{itemize}
+		\item Stochastic Gradient Descent (SGD): Differentiable, useful for large/complex problems (gradient estimation), needs specific learning rate decay \cite{bottou-sgd}
+		\item Root Mean Square Propagation (RMSProp): Extension of SGD with learning rate update depending on the gradient \cite{rmsprop}
+		\item Adaptive Moment Estimation (Adam): Update to RMSProp with learning rate adaptation via gradient and second moment \cite{adam}
+		\end{itemize}
+
+		The optimizer of our choice is \enquote{Adam} as it is the most recent one and did also proof to be stable and suitable for regression problems.		
+		
+		\subsubsection{Hyperparameter}
+		In deep learning there are many hyperparameters to consider and tune (see \cite[p. 415f]{deep-learning}). Here we consider three main hyperparameters, the learning rate, the number of epochs and the loss function. \newline
+		The learning rate determines how quickly the network learns, or respectively how much the weights are adjusted in each step. It is clear that a high learning rate might overshoot the optimal weight at every step, while a low one might never reach a global optimum. For our networks a learning rate between $0.01 < lr < 0.03$ was chosen, depending on the networks success. \newline
+		With the number of epochs we can set the amount of times the network iterates over the dataset to learn from it. In general, more epochs lead to a better adaptation and success on the training data, but also to a poor performance on the validation data. The reason is that the network starts over-fitting to the training data and becomes unable to generalize well on the validation data. Therefore after every epoch a check on the validation data is done to ensure that our network is not starting to over-fit.
+				
+		The loss-function is not really a hyperparameter in a narrow sense, but it is extremely important to make the correct choice. Otherwise the \ac{nn} might be completely unable to learn the specified task. For a typical regression problem the choice would fall for a mean squared or mean absolute error. But as we are trying to learning probability distributions our loss is defined as the negative log-likelihood:
+		
+		\begin{equation}
+		\varepsilon = p_y\cdot \log y
+		\end{equation}
+		
+		whereas $p_y$ is the expected value or the value we would typically receive in a prediction and $y$ is the distribution (or standard-deviation in this case) itself.
+				
+		\subsubsection{Datasets}
+		As mentioned before the model needs a training set, a validation set and a test set:
+		
+		\begin{itemize}
+		\item Training: 80\% of the data, used for the layer weight adaptation (learning)
+		\item Validation: 10\% of the data, used for feedback on the learning progress to avoid over-fitting
+		\item Test: 10\% of the data, used only at the end as the final benchmark of the networks generalization performance
+		\end{itemize}
+		
+		\subsubsection{Feature Selection}
+		Concerning feature selection we always start by using all of them as an input and deselect them if they showed to be not useful or even counter-productive. In table \ref{t:feature_wheel} and \ref{t:feature_solar} below the features with their classification into deterministic, aleatoric, prediction and one-hot-encoding is given:
+		
+		\begin{table}[htb]
+		\centering
+		\caption{Feature definition for the \ac{rwa}; this applies to all four wheels.}
+		\begin{tabular}{b{0.25\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}}
+		\toprule
+		Feature		& Deterministic	& Aleatoric	& Prediction	& (+) One-Hot	\\ \midrule
+		Time			& \checkmark		&			&			&				\\
+		Direction	& \checkmark		&			&			&				\\
+		Speed		& \checkmark		&			&			& \checkmark		\\
+		Friction		& 				&			& \checkmark	&				\\
+		Friction Coefficient	& 		& \checkmark	&			&				\\
+		Angular Momentum		&		& \checkmark	&			&				\\ \bottomrule
+		\end{tabular}
+		\label{t:feature_wheel}
+		\end{table}
+		
+		\begin{table}[htb]
+		\centering
+		\caption{Feature definition for the solar array.}
+		\begin{tabular}{b{0.25\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}}
+		\toprule
+		Feature		& Deterministic	& Aleatoric	& Prediction	& (+) One-Hot	\\ \midrule
+		Time			& \checkmark		&			&			&				\\
+		Voltage		& 				&			& \checkmark	& 				\\
+		Current		&				& \checkmark	& 			&				\\
+		Incident Angle	& \checkmark	&			&			& 				\\ \bottomrule
+		\end{tabular}
+		\label{t:feature_solar}
+		\end{table}
+		
+		\subsubsection{Model Source Code}
+		The starting point for our \ac{nn} is given in code \ref{p:nnm}. It contains the \ac{lstm} layers at the very beginning of the data input to make use of the sequence history. After that follow two feed-forward layers to encode information from the sequence and its history. Finally, there is the distribution output with a feed-forward layer with only two units for mean and standard-deviation. \newline
+		Most importantly to note is that only the (past / future) input definitions have to stay fixed as well as the output. Any other layer in-between is exchangeable and might actually be exchanged if the model is not performing well enough for our data in the next section.
+		
+		\begin{lstlisting}[caption={Neural Network Model}, language=python, label={p:nnm}]
+tfd = tfp.distributions
+
+past_inputs = tf.keras.Input(
+  shape=(window_len, n_total_features), 
+  name='past_inputs')
+encoder = 
+  tf.keras.layers.LSTM(lstm_units, return_state=True)
+encoder_outputs, state_h, state_c = encoder(past_inputs)
+
+future_inputs = tf.keras.Input(
+  shape=(forecast_len, n_deterministic_features),
+  name='future_input')
+decoder_lstm = 
+  tf.keras.layers.LSTM(lstm_units, return_sequences=True)
+x = decoder_lstm(future_inputs,
+  initial_state=[state_h, state_c])
+
+x = tf.keras.Dense(lstm_units, activation='relu')(x)
+x = tf.keras.Dense(lstm_units/2, activation='relu')(x)
+
+x = tf.keras.layers.Dense(2, activation='relu')(x)
+output = tfp.layers.DistributionLambda(
+  lambda t: tfd.Normal(loc=t[...,0],
+    scale=0.01*tf.math.softplus(t[...,1])),
+    name='normal_dist')(x)
+
+model = tf.keras.models.Model(
+  inputs=[past_inputs, future_inputs],
+  outputs=output)
+		\end{lstlisting}	
+
+	\subsection{Results}
+	In the following we will discuss the prediction result of the shown \ac{nn} model. During the training and evaluation process the model did undergo changes in some parts, which will be explicitly noted. \newline
+	The result does not represent the most ideal or optimized network, but merely a proof-of-concept and a starting point as well as inspiration for future work.
+		
+		\subsubsection{Reaction Wheel Assembly}
+		While training the data for the reaction wheels, it was observed that the models could not be used cross-wise. Even though the wheels are all of equal build and similar performance. Therefore we have to look at every wheel individually during the evaluation. The compressed result can be found at the sections end in table \ref{t:rwa_error}.
+		
+		\paragraph*{Wheel A} \hfill
+		
+		The first wheel didn't show any noticeable anomalies and was the easiest to work with. No changes were needed for the model to outperform the baseline ($\varepsilon = 0.0117$ with $\sigma = 0.0090$).
+		%RWA just works out of the box (0.0117 /sigma^2 = 0.0090 in test)
+
+		\paragraph*{Wheel B} \hfill
+		
+		The second wheel was already a bit more difficult, but this circumstance was expected due to its anomalous behaviour in 2008. The network was first used in its normal configuration. Here it did show that it was able to fit very well to the training data with an error smaller than the baseline. But already the validation showed an increased error on the level of the baseline error. Finally for the test data the network error increased again and went above the baseline ($\varepsilon = 0.0321$ with $\sigma = 0.0107$).
+		
+		We tried to remove features, increase and decrease the amount of layers as well as units, but none of that made the network perform any better.
+		%RWB is able to generalise well in the training data, but sucks at the test, kinda as expected (roughly 1% at training, 2% during the validation and 0.0321 /sigma^2 = 0.0107 at test)
+		
+		\paragraph*{Wheel B - Anomaly} \hfill
+		
+		As an extra for the second wheel, we want to look at the increased friction which occurred in September 2008. More specifically we did train the model with all the data before this point to see if we are able to predict this anomalous point or at least get an indication that the wheel is not performing well. \newline
+		Unfortunately the model was again only able to adapt to the training data, but failed to generalize well for the validation as well as the test data, even with different model configurations. Figure \ref{f:rwb_prediction_example} shows one prediction for the test data. As it can be seen the assumption of the model with the anomalous data is quite off. The problem seems to be, that the input data is not anomalous enough for the network to assume a great uncertainty. \newline
+		The only way to detect this anomaly with the help of a \ac{nn} model would have been to compare the prediction with the true value and realize that the difference is too great. Unfortunately this is not the kind of detection we would aimed for.
+		
+		
+		\begin{figure}[htb]
+		\centering
+		\input{3_Prediction/rwb_example.pgf}
+		\caption{Example prediction with uncertainty for the reaction wheel B during September 2008 when increased friction occurred.}
+		\label{f:rwb_prediction_example}
+		\end{figure}
+			
+		\paragraph*{Wheel C} \hfill
+		
+		The prediction for the third wheel again didn't work very well. The model was able to perform well on the training data, but didn't succeed on the the test data ($\varepsilon = 0.0289$ with $\sigma = 0.062$). But this was also expected as the wheel started to show anomalies in 2010 and was multiple times re-lubricated, which might explain the anomalous, non learn-able behaviour.
+		
+		Here we tried to improve the performance by changing the models size. But neither a reduction nor increase of nodes by a factor of 2 made any improvements. \newline
+		Another option was to disable certain input parameters/features in case they had counter-productive effect on the learning. But this again didn't bring any success.
+			
+		\paragraph*{Wheel D} \hfill
+		
+		The fourth and last wheel was an interesting case. With all features activated, the performance was quite poor. But just removing the additional friction coefficient feature (not friction torque, which we are predicting) did help to perform better than the baseline ($\varepsilon = 0.0178$ with $\sigma = 0.074$). \newline
+		In figure \ref{f:rwd_prediction_example} an example of the prediction with uncertainty with future unseen test data is shown. We can see that the prediction follows the true data as it is able to deduce a good prediction about the friction mostly through the given wheel speed as future input.
+		
+		\begin{figure}[htb]
+		\centering
+		\input{3_Prediction/rwd_example.pgf}
+		\caption{Example prediction with uncertainty of the reaction wheel D. The prediction fits the true data quite well if the standard-deviation is taken into account too.}
+		\label{f:rwd_prediction_example}
+		\end{figure}
+			
+		\begin{table}[htb]
+		\centering
+		\caption{\ac{nn} absolute results and in comparison with the baseline.}
+		\begin{tabular}{b{0.25\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}b{0.15\textwidth}}
+		\toprule
+		Dataset				& $| \varepsilon_{NN} |$	& $\sigma$ 	& Baseline $\Delta\varepsilon$	& $\left| \frac{\varepsilon_{Base}}{\varepsilon_{NN}} \right| - 1$	\\ \midrule
+		Wheel A Friction		& $\num{0.0117}$		& $\num{0.0090}$	& $\num{0.0116}$	& 	$\num{99}$\%	\\
+		Wheel B Friction		& $\num{0.0321}$		& $\num{0.0107}$	& $\num{-0.0079}$	& $\num{-25}$\%	\\
+		Wheel C Friction		& $\num{0.0289}$		& $\num{0.0062}$	& $\num{-0.0023}$	& $\num{-8}$\%	\\
+		Wheel D Friction		& $\num{0.0178}$		& $\num{0.0074}$	& $\num{0.0122}$		& $\num{69}$\%	\\
+		\bottomrule
+		\end{tabular}
+		\label{t:rwa_error}
+		\end{table}		
+			
+		\subsubsection{Solar Array}
+		The second housekeeping dataset is the solar array, which is taken as one unique unit and therefore only has one prediction. \newline
+		As features we have the sunlight incident angle on the array and the voltage as well as the current of the \ac{cm}. Here we also want to predict the next 24 hours.  In the chapter before we have seen, that the voltage is constantly decreasing over time (see figure \ref{f:solar_example}). We started again with our standard model and with all features activated and with an unfortunate poor performance of $\varepsilon = 0.0351$ with $\sigma = 0.0071$, which is factor of 5 above the baseline. The first attempt to improve the performance was made by smoothing the dataset to attenuate the noise level and make it easier to generalize. This gave a slight improvement to the model, but also again to the baseline, leaving the same relative performance gap. \newline
+		Therefore the smoothing was undone and the second attempt to improve the network was made. This time the model size was changed with an increase as well as a decreased, which both didn't show any improvements. As last resort the model was reduced to only one dense layer and one feature, resembling a polynomial fit. For the first time, the performance could be improved to $\varepsilon = 0.0100$ with $\sigma = 0.0081$, which is an increase of a factor 3, but still below the baseline.
+		
+		The example of the solar array shows, that \acp{nn} are no magic bullets for analysing, prediction or extrapolating satellite housekeeping data.

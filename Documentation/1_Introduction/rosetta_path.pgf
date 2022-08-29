@@ -1,0 +1,53 @@
+﻿\usetikzlibrary{calc}
+\def\Sun#1#2{ % 1: pos, 2: size
+\draw (#1) node[left color=yellow!90, right color=orange!80!yellow, circle, minimum size=#2cm, inner sep=0pt] (Sun) {};
+}
+
+\def\Earth#1#2{ % 1: pos, 2: size
+\draw (#1) node[left color=blue!20!cyan, right color=blue!80!black, circle, minimum size=#2cm, inner sep=0pt] (Earth) {};
+}
+
+\def\Mars#1#2{
+\draw (#1) node[left color=brown!80!red, right color=red!20!brown, circle, minimum size=#2cm, inner sep=0pt] (Mars) {};
+}
+
+\def\Jupiter#1#2{
+\draw (#1) node[left color=brown!60!yellow, right color=brown!90!red, circle, minimum size=#2cm, inner sep=0pt] (Jupiter) {};
+}
+
+\def\Lutetia#1#2{
+\draw (#1) node[left color=gray!90, right color=black!90, circle, minimum size=#2cm, inner sep=0pt] (Lutetia) {};
+}
+
+\begin{tikzpicture}[scale=1.2]
+\Sun{0,0}{1};
+
+\Earth{-2,1}{0.5};
+\node[below right, align=left] at (Earth.south east) {Earth \\ \textcolor{red}{(1) / (2) /} \\ \textcolor{red}{(4) / (6)}};
+\Mars{-3,2}{0.3};
+\node[below right, align=left] at (Mars.south) {Mars \\ \textcolor{red}{(3)}};
+\Lutetia{-5,0} {0.2};
+\node[below right, align=left] at (Lutetia.south east) {Lutetia \\ \textcolor{red}{(7)}};
+\Jupiter{-7,-1} {0.8};
+\node[below right] at (Jupiter.south east) {Jupiter};
+
+\draw[ultra thick, black] (Earth.south) .. controls (-2,0) and (-2, -1) .. (0, -1);
+\draw[ultra thick, black] (0, -1) .. controls (2,-1) and (2, 2) .. (Mars.east);
+\draw[ultra thick, black] (Mars.west) .. controls (-4,2) and (-5, 1) .. (Lutetia.north);
+
+
+%\foreach \i in {1,...,35} {
+ % \pgfmathsetmacro{\tint}{\i*100/35};
+ % \draw[thick, red!\tint!yellow] (Moon) circle(0.2+\i/20);
+%}
+%\foreach \i in {1,...,35} {
+  %\pgfmathsetmacro{\a}{-\i/2};
+  %\draw[ultra thick, black] (Earth.\a) .. controls +(2,0-\i/20) and +(-3+\i/20,0) .. ($(Moon)+(-90:0.2+\i/20)$);
+%}
+%\foreach \i in {1,...,35} {
+ % \pgfmathsetmacro{\tint}{\i*100/35};
+ % \pgfmathsetmacro{\a}{-\i/2};
+ % \draw[thick, red!\tint!yellow] (Earth.\a) .. controls +(2,0-\i/20) and +(-3+\i/20,0) .. ($(Moon)+(-90:0.2+\i/20)$);    
+%}
+
+\end{tikzpicture}

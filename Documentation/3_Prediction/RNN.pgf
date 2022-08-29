@@ -1,0 +1,92 @@
+﻿\begin{tikzpicture}[
+	input/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=blue!20,
+		bottom color=blue!40,
+		minimum height=2em,
+		minimum width=2em
+	},
+	neuron/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=gray!20,
+		bottom color=gray!40,
+		minimum height=2em,
+		minimum width=2em
+	},
+	output/.style={
+		rectangle,
+		draw=black,
+		thick,
+		align=center,
+		rounded corners,
+		top color=green!20,
+		bottom color=green!40,
+		minimum height=2em,
+		minimum width=2em
+	},
+]
+
+% Input
+\foreach \x in {0, ..., 3}
+	\node[input] (in\x) at (-6, -\x+1.5) {$x_\x$};
+
+% Hidden LSTM 1
+\foreach \x in {0, ..., 3}
+	\foreach \y in {5, ..., 1}
+		\node[neuron,opacity=1-\y/8] (nin1h\x\y) at (-2+\y/10, \x-1.5+\y/10) {};
+
+% Connection Hidden LSTM 1
+\foreach \x in {0, ..., 3}
+	\foreach \y in {5, ..., 1}
+		\draw[->,opacity=1-\y/8] (nin1h\x\y) to [out=45,in=145,loop,looseness=5] (nin1h\x\y);
+
+\foreach \x in {0, ..., 3}
+	\node[neuron] (nin1\x) at (-2, -\x+1.5) {};
+
+% Hidden LSTM 2
+\foreach \x in {0, ..., 3}
+	\foreach \y in {5, ..., 1}
+		\node[neuron,opacity=1-\y/6] (nin2h\x\y) at (2+\y/10, \x-1.5+\y/10) {};
+
+% Connection Hidden LSTM 2
+\foreach \x in {0, ..., 3}
+	\foreach \y in {5, ..., 1}
+		\draw[->,opacity=1-\y/8] (nin2h\x\y) to [out=45,in=145,loop,looseness=5] (nin2h\x\y);
+
+\foreach \x in {0, ..., 3}
+	\node[neuron] (nin2\x) at (2, \x-1.5) {};
+
+% Output
+\node[output] (out) at (6, 0) {$y_0$};
+
+%Connection Input
+\foreach \x in {0, ..., 3}
+	\foreach \y in {0, ..., 3}
+		\draw[->] (in\x.east) -- (nin1\y.west);
+
+% Connection Hidden LSTM 1
+\foreach \x in {0, ..., 3}
+	\draw[->] (nin1\x) to [out=45,in=145,loop,looseness=5] (nin1\x);
+
+% LSTM 1 to LSTM 2
+\foreach \x in {0, ..., 3}
+	\foreach \y in {0, ..., 3}
+		\draw[->] (nin1\x.east) -- (nin2\y.west);
+
+% Connection Hidden LSTM 2
+\foreach \x in {0, ..., 3}
+	\draw[->] (nin2\x) to [out=45,in=145,loop,looseness=5] (nin2\x);
+
+% Connection Output
+\foreach \x in {0, ..., 3}
+	\draw[->] (nin2\x.east) -- (out.west);
+
+\end{tikzpicture}
